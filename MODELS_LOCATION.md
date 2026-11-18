@@ -1,17 +1,23 @@
-# Where are the models and the data?
+# The trained models are in `models_split/`
 
-They are **not in this branch** because GitHub refuses files over 100 MB.
+GitHub refuses files over 100 MB, so each of our 6 models was saved **compressed** (joblib compress=3: 1.6 GB down to about 374 MB)
+and cut into pieces under 100 MB. They are the same models: on the full Amsterdam file the rebuilt models give identical
+predictions for every pixel at every n, and every tree of the Stage 1 forest is identical.
 
-| Folder | Size | Where it is |
-|---|---|---|
-| `models/` (6 trained models) | about 1.6 GB (Stage 1 alone 472 MB) | on the hackathon server: `/shared/collab/Building_Age_Classification/SUBMISSION_FINAL/models/` |
-| `data/` (the organisers' raw files) | 142 MB + 44 MB | the organisers' own released files; also in the same server folder under `data/` |
+## Rebuild `models/` (one command, a few seconds)
+```bash
+python reassemble_models.py
+```
+It joins the pieces and checks each file against the SHA-256 in `models_split/MANIFEST.txt`.
+Then follow `START_HERE.md` section B and run `PREDICT_with_saved_models.ipynb` (no retraining).
 
-## To use the saved models (no retraining)
-Copy this branch next to `models/` and `data/` (or work directly in the server folder above), then follow `START_HERE.md` section B and run `PREDICT_with_saved_models.ipynb`.
+## The data
+`data/` (the organisers' raw files, 142 MB + 44 MB) is not included: it is the organisers' own release.
+Put `amsterdam_data.parquet` and `madrid_data.parquet` in `data/` to rerun the pipeline.
+The full original folder, with uncompressed models and data, is also on the hackathon server:
+`/shared/collab/Building_Age_Classification/SUBMISSION_FINAL/`
 
-## To rebuild the models instead
-Put the two raw parquet files in `data/` and run `00-MAIN-Pipeline-v2.ipynb` (about 45 to 80 minutes, seed 42).
-It recreates `models/` and every result file; two clean runs matched our shipped numbers to 3 decimals.
+## Or retrain from scratch
+Run `00-MAIN-Pipeline-v2.ipynb` (about 45 to 80 minutes, seed 42). It recreates `models/` and every result file.
 
 Team 4, KasiData
