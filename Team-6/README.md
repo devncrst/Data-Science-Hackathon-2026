@@ -60,12 +60,12 @@ Amsterdam numbers come from the report run: 30 fresh random draws, with the meth
 
 **Why two Madrid numbers.** Random folds put a test pixel's neighbours in the training set. Neighbours share construction history and, through the neighbourhood features, information, so random folds overstate accuracy on areas the model has not seen. Spatial block folds keep whole ~1 km blocks together.
 
-**Where the gain comes from** (ablation, same 30 draws, n = 25): the organisers' method scores 0.596; switching prototypes for extra-trees adds 0.041; our 393 features add 0.048; the Stage 1 Madrid model's outputs add 0.003. With prototypes, the new features add only 0.009. A quick test of training one model on Madrid and Amsterdam pixels together gave no gain either.
+**Where the gain comes from** ( same 30 draws, n = 25): the provided scores is 0.596; switching prototypes for extra-trees adds 0.041; our 393 features add 0.048; the Stage 1 Madrid model's outputs add 0.003. With prototypes, the new features add only 0.009. A quick test of training one model on Madrid and Amsterdam pixels together gave no gain either.
 
 ## Rules this code respects
 
 - Stage 1 uses Madrid data only.
 - Stage 2 uses only the n labelled Amsterdam pixels per class for anything involving labels.
 - Labels use the organisers' rule: `(-inf, event]`, `(event, 1984]`, `(1984, 2004]`, `(2004, inf)`.
-- `--city-year-norm` (off by default) normalises against all pixels of a city, labelled or not. Turn it on only if the organisers confirm unlabelled Amsterdam pixels may be used.
+
 
