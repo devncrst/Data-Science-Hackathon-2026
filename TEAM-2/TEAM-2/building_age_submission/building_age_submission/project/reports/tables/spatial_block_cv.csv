@@ -1,0 +1,25 @@
+features,test,n_per_class,split,f1_mean,f1_std
+spatial,Madrid CV,all,random,0.6797,0.0065
+spatial,Madrid CV,all,block,0.6128,0.0068
+spatial,Amsterdam,5,random,0.5787,0.0396
+spatial,Amsterdam,5,block,0.5757,0.0313
+spatial,Amsterdam,25,random,0.6498,0.0154
+spatial,Amsterdam,25,block,0.6506,0.025
+spatial,Amsterdam,50,random,0.6792,0.0088
+spatial,Amsterdam,50,block,0.6662,0.0186
+spatial,Amsterdam,100,random,0.6967,0.0103
+spatial,Amsterdam,100,block,0.6847,0.0238
+spatial,Amsterdam,200,random,0.7168,0.0037
+spatial,Amsterdam,200,block,0.6975,0.016
+plain,Madrid CV,all,random,0.6397,0.0054
+plain,Madrid CV,all,block,0.5976,0.0082
+plain,Amsterdam,5,random,0.5635,0.0379
+plain,Amsterdam,5,block,0.5687,0.0365
+plain,Amsterdam,25,random,0.639,0.0176
+plain,Amsterdam,25,block,0.6355,0.0225
+plain,Amsterdam,50,random,0.671,0.0089
+plain,Amsterdam,50,block,0.6563,0.0161
+plain,Amsterdam,100,random,0.6846,0.0094
+plain,Amsterdam,100,block,0.6744,0.0214
+plain,Amsterdam,200,random,0.7037,0.0029
+plain,Amsterdam,200,block,0.6871,0.014

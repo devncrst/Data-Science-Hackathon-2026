@@ -1,0 +1,7 @@
+# Exact versions used to train and save the models (Python 3.12.3).
+# The .pkl models load reliably only with these versions.
+lightgbm==4.7.0
+scikit-learn==1.9.1
+numpy==2.5.4
+pandas==3.1.1
+scipy==1.18.1

@@ -1,0 +1,32 @@
+{
+  "features": "/shared/collab/features/features_v2_spatial.pkl",
+  "n_features": 120,
+  "seed": 42,
+  "repeats": 10,
+  "madrid_f1": 0.6797,
+  "madrid_std": 0.0065,
+  "amsterdam_zero_shot": 0.5263,
+  "amsterdam_average": 0.6687,
+  "amsterdam_by_n": {
+    "5": [
+      0.5887,
+      0.0298
+    ],
+    "25": [
+      0.66,
+      0.0184
+    ],
+    "50": [
+      0.6784,
+      0.0085
+    ],
+    "100": [
+      0.7005,
+      0.0065
+    ],
+    "200": [
+      0.716,
+      0.0034
+    ]
+  }
+}

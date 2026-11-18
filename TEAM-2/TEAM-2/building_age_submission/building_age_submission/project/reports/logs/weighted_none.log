@@ -1,0 +1,10 @@
+[     1s] madrid: weight "none" | mean 1.000 | 12.3% of pixels within 1 year of a boundary
+[     1s] amsterdam: weight "none" | mean 1.000 | 7.5% of pixels within 1 year of a boundary
+[   103s] Madrid CV macro-F1 = 0.6797 +- 0.0065
+[   126s] Amsterdam zero-shot macro-F1 = 0.5263
+[   155s] Amsterdam n=  5: macro-F1 0.5887 +- 0.0298
+[   187s] Amsterdam n= 25: macro-F1 0.6600 +- 0.0184
+[   222s] Amsterdam n= 50: macro-F1 0.6784 +- 0.0085
+[   260s] Amsterdam n=100: macro-F1 0.7005 +- 0.0065
+[   303s] Amsterdam n=200: macro-F1 0.7160 +- 0.0034
+[   303s] DONE weight=none | Amsterdam average = 0.6687 | n=25 0.6600 | zero-shot 0.5263 | Madrid 0.6797

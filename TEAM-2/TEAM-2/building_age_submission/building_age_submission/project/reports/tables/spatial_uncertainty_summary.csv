@@ -1,0 +1,3 @@
+method,macro_F1,accuracy,mean_confidence,confidence_when_correct,confidence_when_wrong,uncertainty_flags_errors_AUC,share_high_uncertainty
+Prototype (organisers notebook 4),0.6237,0.6238,0.7966,0.8336,0.7353,0.6708,0.0378
+Ours (LightGBM fine-tune + LR),0.6505,0.6544,0.7859,0.8333,0.6963,0.71,0.0783
