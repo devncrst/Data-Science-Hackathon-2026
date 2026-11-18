@@ -69,8 +69,3 @@ Amsterdam numbers come from the report run: 30 fresh random draws, with the meth
 - Labels use the organisers' rule: `(-inf, event]`, `(event, 1984]`, `(1984, 2004]`, `(2004, inf)`.
 - `--city-year-norm` (off by default) normalises against all pixels of a city, labelled or not. Turn it on only if the organisers confirm unlabelled Amsterdam pixels may be used.
 
-## Practical notes
-
-- **Runtime and memory.** With 6 threads, Stage 1 cross-validation takes about 1.5 minutes per fold; the evaluation runs take 10 to 25 minutes. Building the Madrid features peaks at about 1.7 GB of memory. `N_JOBS` in `bac.py` (default 6) sets the CPU threads; keep it modest on a shared server, because LightGBM slows sharply when other jobs compete for the same cores.
-- **Held-out test file.** `adapt_amsterdam.py --test file.parquet` (or `TEST_FILE` in the notebook) predicts a file without labels. It assumes the same columns as the provided data; if `coverage` is missing, the coverage features fall back to Madrid medians.
-- **Recomputed baseline.** `baseline_features.py` follows Notebook 3; on our random folds the organisers' random forest scores 0.629 (they report 0.618 over 5 x 5 folds), and the prototype baseline matches theirs to within 0.005.
