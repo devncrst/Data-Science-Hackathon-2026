@@ -1,7 +1,0 @@
-test,macro_F1,std
-Madrid random StratifiedKFold,0.6797,0.0065
-Madrid spatial StratifiedGroupKFold,0.6163,0.0137
-Amsterdam n=25 official,0.66,0.0184
-Amsterdam n=25 buffer,0.6581,0.0185
-Amsterdam n=200 official,0.716,0.0034
-Amsterdam n=200 buffer,0.7081,0.0032
