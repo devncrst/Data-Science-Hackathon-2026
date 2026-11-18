@@ -1,5 +1,31 @@
 # Building Age Classification: Madrid to Amsterdam transfer
 
+## Getting it running from GitHub
+1. `pip install -r requirements.txt`
+2. `python reassemble_models.py`  (rebuilds `models/` from `models_split/`; checksum-verified)
+3. Put the organisers' two parquet files in `data/`
+4. Follow `START_HERE.md`: section B predicts with the saved models (no retraining); section C retrains everything.
+
+## Which notebook is which
+| Notebook | What it does |
+|---|---|
+| `00-MAIN-Pipeline-v2.ipynb` (top level) | The official final run, outputs saved. Running it retrains everything |
+| `PREDICT_with_saved_models.ipynb` (top level) | Predict any new file with the saved models, no retraining |
+| `experiments/00-MAIN-Pipeline-FINAL.ipynb` | The earlier v1 pipeline, kept for history |
+| `experiments/01-Load-and-CloudMask.ipynb` | Loading the raw data and cloud/haze cleaning |
+| `experiments/02-Feature-Table-v3.ipynb` | Building the 132 per-pixel features |
+| `experiments/03-Stage1-Stage2-Results.ipynb` | Stage 1 (Madrid) and Stage 2 (Amsterdam transfer) results, v1 |
+| `experiments/04-Robustness-Tests.ipynb` | Reverse direction (Amsterdam to Madrid) and stress tests |
+| `experiments/05-Dress-Rehearsal.ipynb` | Whole neighbourhoods hidden, full pipeline retrained, hidden pixels scored |
+| `experiments/06-Uncertainty-Maps.ipynb` | Uncertainty maps and confidence vs accuracy |
+| `experiments/07-Self-Training-Experiment.ipynb` | Self-training with pseudo-labels (tested, not adopted) |
+| `experiments/08-Improvement-Experiments.ipynb` | 7 ideas against a rule fixed in advance; 5x5 smoothing adopted |
+| `experiments/09-Neighbourhood-Features.ipynb` | Neighbourhood features; adopted and confirmed on hidden neighbourhoods |
+
+The experiments are evidence; they are not needed to use the models. `experiments/PROJECT_LOG.md` records every decision and number,
+and `results/README.md` says which result file is final (v2) and which is history (v1).
+
+
 NCRST Regional Data Science Hackathon 2026. Team: Silvio Ivanio, Antonio Palanca, Anselmo, Fenny Andimba, Jian Cloete.
 
 **Task:** classify each 30 m Landsat pixel into building age class 1 to 4. Train on Madrid (Stage 1), then adapt to Amsterdam with only n labelled pixels per class (Stage 2), for n = 5, 25, 50, 100, 200. Metric: macro F1.

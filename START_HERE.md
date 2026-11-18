@@ -3,6 +3,13 @@
 Nothing needs to be run to see our results: every output is already saved in this folder.
 There are three ways to use it.
 
+## 0. If you downloaded this from GitHub (do this first, about 1 minute)
+GitHub refuses files over 100 MB, so two things are not stored here as normal files:
+1. **Models:** run `python reassemble_models.py`. It joins the pieces in `models_split/` into `models/` (6 files) and checks each one against `models_split/MANIFEST.txt`. The models were saved compressed; they give identical predictions to the originals (details in `MODELS_LOCATION.md`).
+2. **Data:** put the organisers' `madrid_data.parquet` and `amsterdam_data.parquet` in a folder called `data/`. Only needed to retrain (C) or to try section B on our own files.
+3. Install the packages: `pip install -r requirements.txt`.
+Then use A, B or C below exactly as written. (On the hackathon server the full folder, models and data included, is at `/shared/collab/Building_Age_Classification/SUBMISSION_FINAL/`.)
+
 ## A. Just look (nothing to run)
 - **Final results:** `results_table_v2.csv` (Amsterdam macro F1, mean and std for n = 5, 25, 50, 100, 200), `f1_vs_log2n_v2.png` (F1 vs log2 n with error bars), `results/madrid_cv_v2.csv` (Madrid CV), `results/madrid_confusion_proportions_v2_spatial.csv`.
 - **The official run with all outputs saved:** `00-MAIN-Pipeline-v2.ipynb` (open it to read the outputs; running it retrains, see C).
