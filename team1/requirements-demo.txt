@@ -1,0 +1,10 @@
+# Use the EXISTING hosted JupyterLab Python environment when possible.
+# Only install if imports in the notebook actually fail.
+numpy
+scikit-learn
+lightgbm
+joblib
+pandas
+matplotlib
+ipython
+ipykernel
