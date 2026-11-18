@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Madrid2Dam · h4d2 results dashboard</title>
+<style>
+:root{
+  --blue:#2340F5; --blue-d:#1A2FC4; --navy:#0E1A4F; --ink:#18213F; --muted:#5D6685;
+  --mint:#9FE6BE; --mint-d:#4CC48A; --lav:#EEF1FE; --lav2:#E2E7FD; --pink:#FDE8EE; --pink-d:#E8476B;
+  --line:#DCE1F3; --bg:#FFFFFF;
+  --c1:#B9C4FF; --c2:#3F63FF; --c3:#5FD39A; --c4:#F2B84B;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"DM Sans","Manrope","Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--blue)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:56px}
+nav .brand{font-weight:800;color:var(--navy);letter-spacing:-.01em;margin-right:auto;display:flex;align-items:center;gap:10px}
+nav .brand i{width:14px;height:14px;background:var(--blue);display:inline-block;border-radius:3px;box-shadow:16px 0 0 var(--mint)}
+nav a{font-size:14px;font-weight:600;color:var(--muted);text-decoration:none}
+nav a:hover{color:var(--blue)}
+/* hero */
+.hero{background:var(--blue);color:#fff;position:relative;overflow:hidden}
+.hero .wrap{padding-top:56px;padding-bottom:44px;position:relative;z-index:1}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.hero h1{font-size:46px;line-height:1.05;margin:14px 0 10px;letter-spacing:-.025em;max-width:720px}
+.hero p.lede{font-size:17px;max-width:640px;opacity:.92;margin:0 0 30px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.kpi{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:var(--r);padding:16px 18px}
+.kpi b{display:block;font-size:34px;letter-spacing:-.02em;line-height:1.1}
+.kpi span{font-size:13px;opacity:.88}
+.kpi em{display:block;font-style:normal;font-size:12px;color:var(--mint);margin-top:4px;font-weight:600}
+.squares{position:absolute;right:40px;top:30px;display:grid;grid-template-columns:repeat(6,34px);gap:6px;opacity:.95}
+.squares div{width:34px;height:34px;border-radius:3px;background:rgba(255,255,255,.07)}
+.squares .m{background:var(--mint)}
+.squares .b{background:#3D58FF}
+/* sections */
+section{padding:56px 0 8px}
+.sec-h{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.tag{background:var(--mint);color:var(--navy);font-weight:800;font-size:13px;border-radius:7px;padding:4px 9px}
+h2{font-size:28px;margin:0;color:var(--navy);letter-spacing:-.02em}
+.sub{color:var(--muted);margin:4px 0 22px;max-width:820px}
+.card{background:var(--lav);border-radius:var(--r);padding:20px 22px}
+.card.white{background:#fff;border:1px solid var(--line)}
+.card.mint{background:#E6F8EE}
+.card.pink{background:var(--pink)}
+.card h3{margin:0 0 8px;font-size:16px;color:var(--navy)}
+.card p{margin:0;color:var(--ink);font-size:14.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+/* simulator */
+.sim{display:grid;grid-template-columns:1.45fr 1fr;gap:20px;align-items:start}
+.mapbox{background:#0B1440;border-radius:var(--r);padding:14px;position:relative}
+.mapbox canvas{width:100%;height:auto;display:block;image-rendering:pixelated;border-radius:8px;background:#0B1440}
+.maphead{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:inline-flex;background:rgba(255,255,255,.08);border-radius:10px;padding:3px}
+.seg button{border:0;background:transparent;color:#C9D2FF;font:600 13px inherit;font-family:inherit;padding:7px 12px;border-radius:8px;cursor:pointer}
+.seg button.on{background:#fff;color:var(--navy)}
+.seg.light{background:var(--lav2)}
+.seg.light button{color:var(--muted)}
+.seg.light button.on{background:var(--blue);color:#fff}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:#C9D2FF}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.slider{margin:6px 0 2px}
+.slider .ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.play{border:0;background:var(--blue);color:#fff;font:700 14px inherit;font-family:inherit;border-radius:10px;padding:10px 16px;cursor:pointer}
+.play:hover{background:var(--blue-d)}
+.bigstat{display:flex;align-items:baseline;gap:10px;margin:14px 0 4px}
+.bigstat b{font-size:46px;letter-spacing:-.03em;color:var(--blue);line-height:1}
+.bigstat span{color:var(--muted);font-size:14px}
+.bars .row{display:grid;grid-template-columns:96px 1fr 46px;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+.bars .track{height:12px;background:var(--lav2);border-radius:6px;overflow:hidden}
+.bars .fill{height:100%;border-radius:6px;transition:width .5s ease}
+.note{font-size:12.5px;color:var(--muted)}
+/* charts */
+svg text{font-family:inherit}
+.chartcard{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 8px}
+.chartcard .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:12px;flex-wrap:wrap}
+.chartcard h3{margin:0;font-size:16px;color:var(--navy)}
+.tip{position:fixed;pointer-events:none;background:var(--navy);color:#fff;font-size:12.5px;padding:7px 10px;border-radius:8px;opacity:0;transition:opacity .12s;z-index:50;white-space:nowrap}
+/* prizes */
+.prize{border-radius:var(--r);padding:18px;color:#fff;background:var(--blue);position:relative}
+.prize.mintp{background:var(--mint);color:var(--navy)}
+.prize .num{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.prize .lbl{font-weight:700;font-size:14px;margin-top:2px}
+.prize .vs{font-size:12.5px;opacity:.9;margin-top:8px}
+.prize .idx{position:absolute;top:14px;right:16px;font-weight:800;opacity:.5}
+/* confusion */
+.cm{display:grid;grid-template-columns:80px repeat(4,1fr);gap:3px;font-size:12px}
+.cm div{padding:9px 4px;text-align:center;border-radius:5px}
+.cm .h{font-weight:700;color:var(--muted);background:transparent;padding:4px 2px}
+.cm .rl{font-weight:700;color:var(--muted);text-align:right;background:transparent}
+.cmtitle{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:15px}
+/* upload */
+.drop{display:block;border:2px dashed #AEB9F5;border-radius:var(--r);background:var(--lav);padding:30px;text-align:center;cursor:pointer;transition:all .15s}
+.drop:hover,.drop.over{border-color:var(--blue);background:#E4E9FF}
+.drop b{color:var(--navy);font-size:17px}
+.drop p{color:var(--muted);margin:6px 0 0;font-size:14px}
+.pill{display:inline-block;background:var(--lav2);color:var(--navy);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;margin:2px}
+.pill.ok{background:#DDF6E8;color:#17663E}
+.pill.warn{background:var(--pink);color:#9B1C3B}
+table.t{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+table.t th{background:var(--navy);color:#fff;text-align:left;padding:10px 12px;font-weight:700}
+table.t th:first-child{border-radius:10px 0 0 0} table.t th:last-child{border-radius:0 10px 0 0}
+table.t td{padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.t tr.hl td{background:#FFF1F4}
+code{background:var(--lav);padding:2px 6px;border-radius:6px;font-size:13px}
+pre{background:var(--navy);color:#DDE3FF;border-radius:12px;padding:14px 16px;font-size:13px;overflow:auto}
+footer{margin:60px 0 0;padding:24px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+.hidden{display:none}
+
+.bench-grid{display:grid;grid-template-columns:1fr 1fr 0.8fr;gap:18px}
+.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.field label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.field input[type=text],.field input[type=number],.field select{font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin:6px 0}
+.chk input{accent-color:var(--blue);width:16px;height:16px}
+.mini-drop{border:2px dashed #AEB9F5;border-radius:12px;background:#fff;padding:14px;text-align:center;cursor:pointer;font-size:13.5px;color:var(--muted);display:block}
+.mini-drop:hover,.mini-drop.over{border-color:var(--blue);background:#E4E9FF}
+.mini-drop b{color:var(--navy)}
+.progress{height:14px;background:var(--lav2);border-radius:999px;overflow:hidden;margin:10px 0 6px}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,#2340F5,#5C77FF);border-radius:999px;transition:width .4s ease}
+.status{font-size:13.5px;color:var(--muted)}
+.mkpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.mkpi .kc{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.mkpi .kc .nm{font-weight:800;color:var(--navy);font-size:14px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.mkpi .kc .nm i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.mkpi .kc .vals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:12px;color:var(--muted)}
+.mkpi .kc .vals b{display:block;font-size:20px;color:var(--ink);letter-spacing:-.01em}
+table.t tr.click{cursor:pointer} table.t tr.click:hover td{background:var(--lav)}
+
+@keyframes stripes{from{background-position:0 0}to{background-position:28px 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.progress.run div{background-color:#2340F5;background-image:linear-gradient(45deg,rgba(255,255,255,.28) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.28) 50%,rgba(255,255,255,.28) 75%,transparent 75%,transparent);background-size:28px 28px;animation:stripes .9s linear infinite}
+.progress.ok div{background:#4CC48A}
+.progress.bad div{background:#E8476B}
+.pmsg{font-size:15px;color:var(--navy);font-weight:600;margin-top:4px;display:flex;align-items:center;gap:10px}
+.pmsg .dot{width:9px;height:9px;border-radius:50%;background:var(--blue);animation:pulse 1.2s ease-in-out infinite;flex:none}
+.stages{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.stg{display:grid;grid-template-columns:220px 1fr;gap:10px;align-items:center}
+.stg .gl{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--lav2);color:#7A83A6;display:inline-flex;align-items:center;gap:6px;transition:all .3s}
+.chip.running{background:#2340F5;color:#fff;box-shadow:0 0 0 4px rgba(35,64,245,.15)}
+.chip.running::before{content:"";width:10px;height:10px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+.chip.done{background:#DDF6E8;color:#17663E}
+.chip.done::before{content:"✓"}
+.chip.skipped{background:var(--pink);color:#9B1C3B;text-decoration:line-through}
+.prizes2{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.sim,.grid2,.grid3,.grid4,.bench-grid,.prizes2{grid-template-columns:1fr}.stg{grid-template-columns:1fr}.squares{display:none}.hero h1{font-size:34px}}
+
+/* neighbour explainer */
+.nbwrap{display:grid;grid-template-columns:1fr;gap:16px;margin-top:14px}
+.nbcols{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.nbgrids svg{width:100%;height:auto;display:block}
+.nbcen h4{margin:12px 0 6px;font-size:13.5px;color:var(--navy)}
+.nbcen h4:first-child{margin-top:0}
+.nbcen .verdict{font-size:13px;color:var(--muted);margin:2px 0 4px}
+.nbcen .verdict b.ok{color:#1F9D63}.nbcen .verdict b.no{color:#D93A3A}
+.nbkey{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:8px;align-items:center}
+.nbkey i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:5px;color:#fff;font:800 10px/14px Inter,sans-serif;text-align:center;font-style:normal}
+.nbeff{margin-top:12px;font-size:13.5px;color:var(--ink)}
+@media(max-width:900px){.nbcols{grid-template-columns:1fr}}
+
+.pmode{margin:4px 0 8px 26px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.pmode select{font:inherit;font-size:12.5px;padding:4px 6px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);max-width:100%}
+button.ghostbtn{width:100%;margin-top:8px;background:#fff;color:var(--blue);border:2px solid var(--blue)}
+.parok{color:#1F9D63;font-weight:800}.parno{color:#D93A3A;font-weight:800}
+
+/* two pages in the local app: "/" = our results, "/bench" = model bench */
+body.respage #bench{display:none!important}
+body.benchpage header.hero, body.benchpage section:not(#bench), body.benchpage nav a.resOnly{display:none!important}
+body.benchpage #bench{padding-top:34px}
+body.respage nav a.toResults, body.benchpage nav a.toBench{display:none!important}
+nav a.toBench{color:var(--blue)}
+
+/* beginner guide */
+.steps4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.steps4 .card b.k{display:inline-block;background:var(--blue);color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-size:13px;margin-right:6px}
+.gloss{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.gloss .card{padding:14px 16px}
+.gloss h4{margin:0 0 4px;font-size:14.5px;color:var(--navy)}
+.gloss p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.howread{font-size:13.5px;color:var(--muted);margin:6px 0 12px;line-height:1.55}
+.howread b{color:var(--ink)}
+@media(max-width:900px){.steps4,.gloss{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <div class="brand"><i></i>&nbsp;&nbsp;&nbsp;Madrid2Dam · h4d2</div>
+  <a href="/" class="appOnly hidden toResults">← Our results</a><a href="#start" class="resOnly">Start here</a><a href="#sim" class="resOnly">Simulator</a><a href="#curve" class="resOnly">Scores</a><a href="#errors" class="resOnly">Errors</a><a href="#nbrs" id="nbNav" class="hidden resOnly">Neighbours</a><a href="#upload" class="resOnly">Your data</a><a href="#method" class="resOnly">Method</a><a href="/bench" class="appOnly hidden toBench">Model bench →</a>
+</div></nav>
+
+<header class="hero">
+  <div class="squares" id="squares"></div>
+  <div class="wrap">
+    <div class="eyebrow">Hack4dev 2026 · NCRST Namibia · Building age from Landsat</div>
+    <h1>Dating a new city's buildings with a handful of labels</h1>
+    <p class="lede">Our model, h4d2, looks at 42 years of satellite photos of every small patch of a city and guesses when the buildings there were built. It learned in Madrid, where we had lots of answers, and then needed only 5 to 200 example answers per age group to work in Amsterdam.</p>
+    <div class="kpis" id="kpis"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="bench" class="appOnly hidden">
+  <div class="sec-h"><span class="tag">00</span><h2>Model bench</h2></div>
+  <p class="sub">A test bench: pick a city and one or more models, and it runs the official test. Each model gets 5 to 200 example answers per age class, 10 times with different random picks, and is scored on every patch it wasn't told. Everything runs on this computer in the background. Our own results are on the <a href="/">results page</a>.</p>
+  <p class="howread"><b>Quick start:</b> 1. pick a city. 2. tick the models to compare: ours (h4d2), our previous model and the organisers' baseline are built in, and you can add your own <code>.pkl</code> file. 3. press <b>Run simulation</b> and watch the progress. Results, maps and a leaderboard appear below. New to the terms? See <a href="/#start">Start here</a>.</p>
+  <div class="bench-grid">
+    <div class="card">
+      <h3>1 · Dataset</h3>
+      <div class="field"><label>City</label><select id="bDataset"></select></div>
+      <div class="note" id="bDsInfo"></div>
+      <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700;color:var(--blue);font-size:14px">+ Add a new city</summary>
+        <div class="field"><label>Name</label><input type="text" id="bDsName" placeholder="e.g. Windhoek"></div>
+        <div class="field"><label>Class 1/2 boundary year (Madrid 1960, Amsterdam 1945)</label><input type="number" id="bDsEvent" value="1945"></div>
+        <label class="mini-drop" id="bDsDrop"><input type="file" id="bDsFile" accept=".parquet" hidden><b>Drop the city's parquet</b><br>same columns as the organiser files, with weighted_mean_year</label>
+      </details>
+    </div>
+    <div class="card">
+      <h3>2 · Models</h3>
+      <div id="bModels"></div>
+      <label class="mini-drop" id="bMdDrop" style="margin-top:10px"><input type="file" id="bMdFile" accept=".pkl,.joblib" hidden><b>Drop a model .pkl</b><br>needs predict_few_shot(df, support) or predict(df, n)</label>
+      <div class="note" style="margin-top:8px">Only upload models you trust: opening a .pkl runs its code.</div>
+    </div>
+    <div class="card">
+      <h3>3 · Run</h3>
+      <div class="field"><label>Example answers per age class</label><div id="bShots" style="display:flex;gap:10px;flex-wrap:wrap"></div></div>
+      <div class="field"><label>Repeats per budget (random picks of labelled patches)</label><input type="number" id="bTrials" value="10" min="1" max="50"></div>
+      <div class="field"><label>Seed (fixes the random picks so a run can be repeated)</label><input type="number" id="bSeed" value="42"></div>
+      <button class="play" id="bRun" style="width:100%;margin-top:6px">▶ Run simulation</button>
+      <button class="play ghostbtn" id="bParity" title="Built-in h4d2 vs the uploaded h4d2 pickle on identical pixels with the same saved models">⇄ Parity check: h4d2 pickle vs built-in</button>
+    </div>
+  </div>
+  <div class="card white" id="bProg" style="margin-top:18px;display:none">
+    <div style="display:flex;justify-content:space-between;gap:12px"><b id="bProgTitle" style="color:var(--navy)">Running</b><span class="status" id="bProgTime"></span></div>
+    <div class="progress" id="bProgWrap"><div id="bProgBar"></div></div>
+    <div class="pmsg"><span class="dot" id="bDot"></span><span id="bProgMsg"></span></div>
+    <div class="stages" id="bStages"></div>
+  </div>
+  <div id="bParityOut" style="margin-top:18px"></div>
+  <div id="bResult" style="margin-top:18px"></div>
+  <div class="card white" style="margin-top:18px;overflow:auto"><h3>Leaderboard</h3><p class="note" style="margin:0 0 10px">Every run on this computer, with its scores (0 to 1, higher is better). Click a row to open it again.</p><table class="t" id="bBoard"></table></div>
+</section>
+
+<section id="start">
+  <div class="sec-h"><span class="tag">★</span><h2>Start here: what this is, in plain words</h2></div>
+  <p class="sub">No machine-learning background needed. Read this once and the rest of the page will make sense.</p>
+  <div class="steps4">
+    <div class="card"><h3><b class="k">1</b>The question</h3><p>Cities often don't know when each of their buildings was built. That matters for planning, heritage and energy upgrades. Checking by hand is slow and expensive.</p></div>
+    <div class="card"><h3><b class="k">2</b>The data</h3><p>A satellite (Landsat) has photographed every 30 m × 30 m square of the city once a year since 1984. Each square gets a 42-year "flip-book" in 6 colours, including infrared we can't see.</p></div>
+    <div class="card"><h3><b class="k">3</b>The trick</h3><p>New and old neighbourhoods change differently over the years. The model learns those patterns in Madrid, where many answers are known, then reuses them in Amsterdam.</p></div>
+    <div class="card"><h3><b class="k">4</b>The test</h3><p>In Amsterdam the model gets only a few answers (5 to 200 per age group). It must guess every other square, and we score how many it gets right.</p></div>
+  </div>
+  <h3 style="margin:26px 0 0">The words you'll see on this page</h3>
+  <div class="gloss">
+    <div class="card white"><h4>Pixel / patch</h4><p>One 30 m × 30 m square of the city, seen from space. Each dot on the maps is one patch.</p></div>
+    <div class="card white"><h4>Age class</h4><p>The four answer boxes: built before 1945, 1945–1984, 1984–2004, or 2004–2024 (in Madrid the first cut-off is 1960). The model must put every patch in one box.</p></div>
+    <div class="card white"><h4>Model</h4><p>A computer program that learned a rule from examples instead of being told the rule. Ours is called h4d2.</p></div>
+    <div class="card white"><h4>Training</h4><p>Showing the model many examples with the right answer, so it can adjust itself until its guesses match.</p></div>
+    <div class="card white"><h4>Label</h4><p>A patch whose real age we tell the model. Labels are expensive, because someone has to look them up.</p></div>
+    <div class="card white"><h4>Label budget (n)</h4><p>How many labelled patches per age class the model may use in Amsterdam. n = 5 means 5 × 4 = 20 labels in total.</p></div>
+    <div class="card white"><h4>Few-shot / transfer learning</h4><p>Learning in one place with lots of examples (Madrid), then adapting to a new place with very few (Amsterdam).</p></div>
+    <div class="card white"><h4>Zero-shot</h4><p>Using the Madrid model in Amsterdam with no Amsterdam labels at all. It shows how much carries over on its own.</p></div>
+    <div class="card white"><h4>Baseline</h4><p>The organisers' simple reference model. Beating it by a clear margin is how you show real progress.</p></div>
+    <div class="card white"><h4>Score: macro F1</h4><p>The main score, from 0 to 1. For each age class it checks how many of those buildings we found and how many of our calls were right, then averages the four classes equally so rare ages count as much as common ones. 1.0 is perfect; random guessing scores about 0.25.</p></div>
+    <div class="card white"><h4>Recall</h4><p>For one age class: of all patches that really are that age, the share the model got right.</p></div>
+    <div class="card white"><h4>Confusion matrix</h4><p>A table of real age (rows) against the model's guess (columns). The diagonal is correct; everything else is a mix-up.</p></div>
+    <div class="card white"><h4>Draws and seed</h4><p>Which patches get labelled is picked at random, so we repeat each test 10 times with different picks (draws) and average. The seed is the number that fixes the random picks, so anyone can repeat them exactly.</p></div>
+    <div class="card white"><h4>Neighbours</h4><p>Patches within 90 m. Buildings next to each other are usually from the same era, so the model also looks at the neighbourhood.</p></div>
+    <div class="card white"><h4>Hidden test</h4><p>Data the organisers keep secret and use to score every team fairly. Our numbers here use the data we were given, so hidden-test scores may be a little lower.</p></div>
+  </div>
+</section>
+
+<section id="sim">
+  <div class="sec-h"><span class="tag">01</span><h2>Label budget simulator</h2></div>
+  <p class="sub">Every dot is one 30 m patch of Amsterdam, coloured by age. Move the slider to change how many example answers (labels) the model gets, and watch its guesses change.</p>
+  <p class="howread"><b>How to read it:</b> the white rings are the only patches whose real age the model was told. Every other dot is the model's own guess, and those guesses are what get scored. Switch to <b>Real age</b> to see the truth, or <b>Right / wrong</b> to see the mistakes in pink. At 0 the model uses no Amsterdam answers, only what it learned in Madrid.</p>
+  <div class="sim">
+    <div class="mapbox">
+      <div class="maphead">
+        <div class="seg" id="viewSeg"><button data-v="pred" class="on">Model's guess</button><button data-v="truth">Real age</button><button data-v="err">Right / wrong</button></div>
+      </div>
+      <canvas id="map"></canvas>
+      <div class="legend" id="mapLegend"></div>
+    </div>
+    <div>
+      <div class="card white">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <h3 style="margin:0">Example answers per age class</h3>
+          <button class="play" id="playBtn">▶ Play</button>
+        </div>
+        <div class="slider"><input type="range" id="nSlider" min="0" max="5" step="1" value="2">
+          <div class="ticks"><span>0</span><span>5</span><span>25</span><span>50</span><span>100</span><span>200</span></div></div>
+        <div class="bigstat"><b id="simF1">–</b><span id="simF1lbl">score (macro F1, 0 to 1) on every patch it wasn't told</span></div>
+        <div class="note" id="simNote"></div>
+        <div style="height:12px"></div>
+        <div class="bars" id="simRecall"></div>
+        <div class="note" style="margin-top:10px">Each bar is one age class: the share of buildings of that age the model put in the right box (this is called recall).</div>
+      </div>
+      <div class="card mint" style="margin-top:14px">
+        <h3>Why neighbours matter</h3>
+        <p><b>87%</b> of side-by-side Amsterdam patches are the same age, because whole districts were built in one go. So the model doesn't judge a patch alone: it also looks at the patches around it, up to 90 m away.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="curve">
+  <div class="sec-h"><span class="tag">02</span><h2>Scores against the label budget</h2></div>
+  <p class="sub">How the score grows as the model gets more example answers. These are the official numbers, made exactly the way the organisers' own notebook makes them.</p>
+  <p class="howread"><b>How to read it:</b> left to right means more labels; higher is better. Each point is the average of 10 tests with different random picks of labelled patches. The small whiskers show how much the score moved between those picks. The right chart shows how far ahead of the organisers' baseline we are at each budget. Seed 1000 is a second, pre-announced check that the result isn't luck.</p>
+  <div class="grid2" style="grid-template-columns:1.5fr 1fr">
+    <div class="chartcard">
+      <div class="top"><h3>Score in Amsterdam vs example answers per age class</h3>
+        <div class="seg light" id="seedSeg"><button data-s="42" class="on">Seed 42 (official)</button><button data-s="1000">Seed 1000 (check)</button></div></div>
+      <svg id="curveSvg" viewBox="0 0 640 360" width="100%"></svg>
+    </div>
+    <div class="chartcard">
+      <div class="top"><h3>How far ahead of the organisers' baseline</h3></div>
+      <svg id="gainSvg" viewBox="0 0 400 360" width="100%"></svg>
+    </div>
+  </div>
+  <div class="grid4" style="margin-top:18px" id="prizes"></div>
+  <div class="card white" style="margin-top:18px;overflow:auto"><table class="t" id="resTable"></table></div>
+</section>
+
+<section id="errors">
+  <div class="sec-h"><span class="tag">03</span><h2>Where the mistakes are</h2></div>
+  <p class="sub">Which ages the models mix up, in Amsterdam, averaged over the 10 official tests.</p>
+  <p class="howread"><b>How to read a table:</b> each row is a real age and each column is what the model guessed. Read across a row: of all buildings that really are that age, what share got each guess. The blue diagonal (top-left to bottom-right) is the correct share, so bigger is better. Pink cells off the diagonal are the common mix-ups.</p>
+  <div style="margin-bottom:14px" class="seg light" id="cmSeg"><button data-n="5">n = 5</button><button data-n="25" class="on">n = 25</button><button data-n="200">n = 200</button></div>
+  <div class="grid3" id="cmGrid"></div>
+  <div class="grid2" style="margin-top:18px">
+    <div class="card white" id="madridCm"></div>
+    <div class="card"><h3>Reading the pattern</h3><p id="cmText"></p></div>
+  </div>
+</section>
+
+
+<section id="nbrs" class="hidden">
+  <div class="sec-h"><span class="tag">04</span><h2>How neighbours changed the guess</h2></div>
+  <p class="sub">The model first guesses each patch on its own. Then it "asks the neighbours": it blends its guess with the guesses for the patches within 90 m. Below is a real 7 × 7 corner of Amsterdam.</p>
+  <p class="howread"><b>How to read it:</b> the first grid is the real age, which the model never sees. The second is the model's guess before asking the neighbours, and the third is after, which is what gets scored. Badges mark the patches the blending changed: ✓ fixed, ✕ broken, • changed but still wrong. On the right, the bars show how the centre patch was judged, step by step. Gaps are places with no labelled building.</p>
+  <div class="seg light" id="nbSeg"></div>
+  <div id="nbBox"></div>
+  <div class="card white" style="margin-top:18px;overflow:auto"><h3>Does asking the neighbours help? Score over the 10 official tests</h3><table class="t" id="nbTable"></table>
+  <p class="note" style="margin:10px 0 0">Our official scores include this step. Honest result: blending costs a little when labels are scarce and helps at 200. Most of h4d2's lead comes from starting with what it learned in Madrid and from the neural networks, not from this step.</p></div>
+</section>
+
+<section id="upload">
+  <div class="sec-h"><span class="tag">05</span><h2>Run your own data</h2></div>
+  <p class="sub" id="uploadSub">Have a file of predictions? Drop it here to see it on a map. It needs one row per patch, with columns <code>px_key, py_key</code> (the patch's position) and <code>pred_class</code> (the guessed age class, 1 to 4). The files made by <code>scripts/submit_predict.sh</code> already have this. If the file also has the real answers (<code>true_class</code> or <code>weighted_mean_year</code>), you also get a score. To run the full model on raw satellite data, use the <a href="/bench">model bench</a>, or <code>h4d2/Dashboard.ipynb</code> on the hub.</p>
+  <div id="liveBanner" class="card mint hidden" style="margin-bottom:16px"></div>
+  <label class="drop" id="drop"><input type="file" id="file" accept=".csv" multiple hidden>
+    <b>Drop CSV files here, or click to choose</b>
+    <p>Files stay in your browser. Nothing is uploaded anywhere.</p></label>
+  <div id="upOut" style="margin-top:18px"></div>
+</section>
+
+<section id="method">
+  <div class="sec-h"><span class="tag">06</span><h2>How h4d2 works</h2></div>
+  <p class="sub">Four parts. Each one helps carry what the model learned in Madrid over to Amsterdam.</p>
+  <div class="grid4">
+    <div class="card"><h3>1 · Neighbour context</h3><p>From each patch's 42-year flip-book we compute 60 summary numbers, such as how bright it was early on and when it changed most. These are averaged with the patches up to 90 m around it, because neighbours are usually the same age.</p></div>
+    <div class="card"><h3>2 · Six networks</h3><p>Neural networks are pattern-finding programs. Six of them read each patch's full 42-year series. Three were also trained so they can't tell Madrid from Amsterdam, which pushes them to learn patterns that hold in both cities (this is called domain-adversarial training).</p></div>
+    <div class="card"><h3>3 · Gentle adaptation</h3><p>With the few Amsterdam answers, the model adjusts its final decision rule but is held close to the rule it learned in Madrid. Think of it as "trust Madrid, nudge for Amsterdam", so a handful of examples can't throw it off.</p></div>
+    <div class="card"><h3>4 · Smoothing</h3><p>Each final guess is blended with its neighbours' guesses, and the known answers pass their age on to nearby patches. Section 04 shows exactly what this changes on real patches.</p></div>
+  </div>
+  <div class="grid2" style="margin-top:18px">
+    <div class="card pink"><h3>Disclosures</h3><p>What we want judges to know: three networks were trained on Amsterdam satellite data without any age answers. When predicting, Amsterdam patches are also used as neighbours, again without answers. Our settings were chosen using the Amsterdam data we were given, so hidden-test scores may be a little lower. Cheating check: we scrambled the real ages of every patch the model wasn't told, and 0 predictions changed, so the model never peeks at the answers.</p></div>
+    <div class="card white"><h3>Reproduce</h3><pre>python -m h4d2 sweep --seeds 42 --rng-mode notebook
+python -m h4d2 adapt --n 25 --seed 42
+bash scripts/submit_predict.sh ams.parquet mad.parquet out/</pre></div>
+  </div>
+</section>
+
+<footer>Team Madrid2Dam · Hack4dev 2026 · repo Hack4dev-NCRST, method declared in commit 48a195f (17 Nov 17:35). Numbers: official harness, seed 42 unless marked.</footer>
+</main>
+<div class="tip" id="tip"></div>
+
+<script id="payload" type="application/json">__PAYLOAD__</script>
+<script>
+(function(){
+"use strict";
+const P = JSON.parse(document.getElementById('payload').textContent);
+const LIVE = window.H4D2_LIVE || null;
+const SH = [5,25,50,100,200];
+const CLS = ['Pre-1945','1945–1984','1984–2004','2004–2024'];
+const CLS_M = ['Pre-1960','1960–1984','1984–2004','2004–2024'];
+const CC = ['#B9C4FF','#3F63FF','#5FD39A','#F2B84B'];
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const f3 = v => (v==null||isNaN(v))?'–':v.toFixed(3);
+const $ = id => document.getElementById(id);
+const tip = $('tip');
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';}
+function hideTip(){tip.style.opacity=0;}
+function dec(b64,T){const s=atob(b64);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return new T(u.buffer);}
+
+// official numbers
+const O = P.official;
+const get = (k,n,i) => O[k][String(n)][i];
+const ours42 = SH.map(n=>get('new',n,0)), ours1k = SH.map(n=>get('new_1000',n,0));
+const avg = a => a.reduce((s,v)=>s+v,0)/a.length;
+
+// hero squares
+(function(){const pat='..m..b.m..b...b.m....m.b..b..m....b..m.';let h='';for(let i=0;i<36;i++){const c=pat[i%pat.length];h+=`<div class="${c==='m'?'m':c==='b'?'b':''}"></div>`;}$('squares').innerHTML=h;})();
+// KPIs
+const K=[[avg(ours42),'average score over the five label budgets (5 to 200)','organisers\' baseline '+f3(avg(SH.map(n=>get('proto',n,0))))],
+ [get('new',25,0),'score with only 25 answers per age class','organisers\' baseline '+f3(get('proto',25,0))],
+ [Math.max(...ours42),'best score, with 200 answers per age class','organisers\' baseline '+f3(get('proto',200,0))],
+ [P.zero_shot.h4d2,'score in Amsterdam with no Amsterdam answers','organisers\' model '+f3(P.zero_shot.rf)],
+ [P.madrid_cv.mean,'score back in Madrid, on patches held out from training','organisers\' model '+f3(P.madrid_cv.rf)]];
+$('kpis').innerHTML=K.map(k=>`<div class="kpi"><b>${f3(k[0])}</b><span>${k[1]}</span><em>${k[2]}</em></div>`).join('');
+
+// ---------------- macro F1 + recall in JS
+function scoreArr(y,p,mask){const tp=[0,0,0,0],fp=[0,0,0,0],fn=[0,0,0,0];let nq=0;
+  for(let i=0;i<y.length;i++){if(mask&&!mask[i])continue;const a=y[i]-1,b=p[i]-1;if(a<0||a>3||b<0||b>3)continue;nq++;if(a===b)tp[a]++;else{fp[b]++;fn[a]++;}}
+  const f1=[],rec=[];for(let c=0;c<4;c++){const pr=tp[c]+fp[c]?tp[c]/(tp[c]+fp[c]):0,rc=tp[c]+fn[c]?tp[c]/(tp[c]+fn[c]):0;rec.push(rc);f1.push(pr+rc?2*pr*rc/(pr+rc):0);}
+  return {macro:avg(f1),rec,n:nq};}
+function confusion(y,p,mask){const m=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];for(let i=0;i<y.length;i++){if(mask&&!mask[i])continue;const a=y[i]-1,b=p[i]-1;if(a<0||a>3||b<0||b>3)continue;m[a][b]++;}
+  return m.map(r=>{const s=r.reduce((x,v)=>x+v,0)||1;return r.map(v=>v/s);});}
+
+// ---------------- map renderer (shared by simulator + uploads)
+function makeMap(canvas, px, py, W, H, big){
+  const scale = Math.max(1, Math.floor(900/Math.max(W,H)));
+  canvas.width=W*scale; canvas.height=H*scale;
+  const ctx=canvas.getContext('2d');
+  return {draw(colorOf, rings){
+    ctx.fillStyle='#0B1440';ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(let i=0;i<px.length;i++){const c=colorOf(i);if(!c)continue;ctx.fillStyle=c;const z=big?scale*2:scale;ctx.fillRect(px[i]*scale,(H-1-py[i])*scale,z,z);}
+    if(rings){ctx.lineWidth=Math.max(1.5,scale*0.9);for(const i of rings){ctx.strokeStyle='#FFFFFF';ctx.beginPath();ctx.arc(px[i]*scale+scale/2,(H-1-py[i])*scale+scale/2,scale*3.2,0,Math.PI*2);ctx.stroke();}}
+  }};
+}
+function legendHTML(view,labels){
+  if(view==='err') return `<span><i style="background:#3A4C9A"></i>Correct</span><span><i style="background:#FF5A7A"></i>Wrong</span><span><i style="border:2px solid #fff;border-radius:50%;width:9px;height:9px"></i>Labelled pixel</span>`;
+  return labels.map((l,c)=>`<span><i style="background:${CC[c]}"></i>${l}</span>`).join('')+(view==='pred'?`<span><i style="border:2px solid #fff;border-radius:50%;width:9px;height:9px"></i>Labelled pixel</span>`:'');
+}
+function recallBars(el,rec,labels){el.innerHTML=rec.map((r,c)=>`<div class="row"><span>${labels[c]}</span><div class="track"><div class="fill" style="width:${(r*100).toFixed(1)}%;background:${CC[c]}"></div></div><b>${Math.round(r*100)}%</b></div>`).join('');}
+
+// ---------------- simulator
+const M=P.map, mpx=dec(M.px,Uint16Array), mpy=dec(M.py,Uint16Array), my=dec(M.y,Uint8Array);
+const preds={0:dec(M.zero,Uint8Array)}; const sups={0:new Uint32Array(0)};
+SH.forEach(n=>{preds[n]=dec(M.pred[String(n)],Uint8Array);sups[n]=dec(M.sup[String(n)],Uint32Array);});
+const simMap=makeMap($('map'),mpx,mpy,M.w,M.h);
+const NS=[0,5,25,50,100,200]; let view='pred';
+function renderSim(){
+  const n=NS[+$('nSlider').value]; const p=preds[n]; const sup=sups[n];
+  const mask=new Uint8Array(my.length).fill(1); for(const i of sup) mask[i]=0;
+  const col = view==='truth' ? (i=>CC[my[i]-1]) : view==='pred' ? (i=>CC[p[i]-1]) : (i=>p[i]===my[i]?'#3A4C9A':'#FF5A7A');
+  simMap.draw(col, view==='truth'?null:sup);
+  const s=scoreArr(my,p,mask);
+  $('simF1').textContent=f3(s.macro);
+  $('simNote').innerHTML = n===0 ? 'Zero-shot: the Madrid model with <b>no</b> Amsterdam answers at all. This shows what carries over from Madrid on its own.' :
+     `The model was told the age of ${n} patches per class (${4*n} in total) out of ${my.length.toLocaleString()}. This map is one random pick of those patches; averaged over the 10 official picks, the score at n = ${n} is <b>${f3(get('new',n,0))}</b>.`;
+  recallBars($('simRecall'),s.rec,CLS);
+  $('mapLegend').innerHTML=legendHTML(view,CLS);
+}
+$('nSlider').addEventListener('input',renderSim);
+$('viewSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;view=b.dataset.v;[...$('viewSeg').children].forEach(x=>x.classList.toggle('on',x===b));renderSim();});
+let playT=null;
+$('playBtn').addEventListener('click',()=>{if(playT){clearInterval(playT);playT=null;$('playBtn').textContent='▶ Play';return;}
+  $('playBtn').textContent='❚❚ Pause';$('nSlider').value=0;renderSim();
+  playT=setInterval(()=>{const s=$('nSlider');if(+s.value>=5){clearInterval(playT);playT=null;$('playBtn').textContent='▶ Play';return;}s.value=+s.value+1;renderSim();},1300);});
+renderSim();
+
+// ---------------- curve chart
+function curve(seed){
+  const svg=$('curveSvg'); const W=640,H=360,L=56,R=20,T=18,B=58;
+  const sfx = seed==='1000'?'_1000':'';
+  const series=[{k:'new'+sfx,name:'h4d2 (ours)',c:css('--blue'),w:3.5,eb:true},{k:'lr_sup'+sfx,name:'lr_sup (previous champion)',c:'#8C9BEA',w:2.2},{k:'proto'+sfx,name:'Organiser baseline',c:'#A3A9BC',w:2.2}];
+  const x=i=>L+(Math.log2(SH[i])-Math.log2(5))/(Math.log2(200)-Math.log2(5))*(W-L-R);
+  const y0=0.5,y1=0.78; const y=v=>T+(1-(v-y0)/(y1-y0))*(H-T-B);
+  let g='';
+  for(let v=0.5;v<=0.781;v+=0.05){g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#E7EAF6"/><text x="${L-10}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#5D6685">${v.toFixed(2)}</text>`;}
+  SH.forEach((n,i)=>{g+=`<text x="${x(i)}" y="${H-B+20}" text-anchor="middle" font-size="12" fill="#5D6685">${n}</text><text x="${x(i)}" y="${H-B+34}" text-anchor="middle" font-size="10.5" fill="#9AA1BC">log2 ${Math.log2(n).toFixed(1)}</text>`;});
+  g+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Labelled Amsterdam pixels per class (log2 scale)</text>`;
+  g+=`<text transform="translate(16,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Macro F1</text>`;
+  // shaded gain band
+  const top=SH.map((n,i)=>`${x(i)},${y(O[series[0].k][String(n)][0])}`), bot=SH.map((n,i)=>`${x(i)},${y(O[series[2].k][String(n)][0])}`).reverse();
+  g+=`<polygon points="${top.concat(bot).join(' ')}" fill="#9FE6BE" opacity=".35"/>`;
+  series.slice().reverse().forEach(s=>{
+    const pts=SH.map((n,i)=>[x(i),y(O[s.k][String(n)][0]),O[s.k][String(n)][1],n]);
+    g+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="${s.c}" stroke-width="${s.w}" stroke-linejoin="round"/>`;
+    pts.forEach(p=>{const m=O[s.k][String(p[3])][0],sd=p[2];
+      if(s.eb){g+=`<line x1="${p[0]}" x2="${p[0]}" y1="${y(m+sd)}" y2="${y(m-sd)}" stroke="${s.c}" stroke-width="2"/><line x1="${p[0]-6}" x2="${p[0]+6}" y1="${y(m+sd)}" y2="${y(m+sd)}" stroke="${s.c}" stroke-width="2"/><line x1="${p[0]-6}" x2="${p[0]+6}" y1="${y(m-sd)}" y2="${y(m-sd)}" stroke="${s.c}" stroke-width="2"/>`;}
+      g+=`<circle cx="${p[0]}" cy="${p[1]}" r="${s.eb?6:4.5}" fill="#fff" stroke="${s.c}" stroke-width="2.5" data-t="${s.name}<br>n = ${p[3]}: <b>${f3(m)}</b> ± ${f3(sd)}"/>`;
+      if(s.eb) g+=`<text x="${p[0]}" y="${p[1]-14}" text-anchor="middle" font-size="12" font-weight="700" fill="${s.c}">${f3(m)}</text>`;});
+  });
+  // legend
+  series.forEach((s,i)=>{g+=`<g transform="translate(${L+10+i*190},${T+4})"><rect width="14" height="4" y="5" rx="2" fill="${s.c}"/><text x="20" y="11" font-size="12" fill="#18213F">${s.name}</text></g>`;});
+  svg.innerHTML=g;
+  svg.querySelectorAll('circle[data-t]').forEach(c=>{c.addEventListener('mousemove',e=>showTip(e,c.dataset.t));c.addEventListener('mouseleave',hideTip);});
+}
+$('seedSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('seedSeg').children].forEach(x=>x.classList.toggle('on',x===b));curve(b.dataset.s);});
+curve('42');
+
+// gain bars
+(function(){const svg=$('gainSvg');const W=400,H=360,L=36,R=12,T=30,B=46;const gains=SH.map(n=>get('new',n,0)-get('proto',n,0));
+  const mx=0.16;const bw=(W-L-R)/SH.length*0.62;let g='';
+  for(let v=0;v<=0.16;v+=0.04){const yy=T+(1-v/mx)*(H-T-B);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="#E7EAF6"/><text x="${L-6}" y="${yy+4}" text-anchor="end" font-size="11" fill="#5D6685">+${v.toFixed(2)}</text>`;}
+  SH.forEach((n,i)=>{const cx=L+(i+0.5)*(W-L-R)/SH.length;const hh=gains[i]/mx*(H-T-B);
+    g+=`<rect x="${cx-bw/2}" y="${H-B-hh}" width="${bw}" height="${hh}" rx="6" fill="${n===25?'#2340F5':'#5C77FF'}" data-t="n = ${n}: h4d2 ${f3(get('new',n,0))} vs baseline ${f3(get('proto',n,0))}"/>`;
+    g+=`<text x="${cx}" y="${H-B-hh-7}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0E1A4F">+${gains[i].toFixed(3)}</text><text x="${cx}" y="${H-B+18}" text-anchor="middle" font-size="12" fill="#5D6685">n = ${n}</text>`;});
+  g+=`<text x="${W/2}" y="${H-8}" text-anchor="middle" font-size="12" fill="#18213F" font-weight="600">Macro F1 gain over the organiser baseline</text>`;
+  svg.innerHTML=g;svg.querySelectorAll('rect[data-t]').forEach(c=>{c.addEventListener('mousemove',e=>showTip(e,c.dataset.t));c.addEventListener('mouseleave',hideTip);});})();
+
+// prizes
+(function(){const a=avg(ours42),ab=avg(SH.map(n=>get('proto',n,0))),al=avg(SH.map(n=>get('lr_sup',n,0)));
+  const pk=Math.max(...ours42);
+  const items=[[a,'Best average score (all budgets)',`organisers' baseline ${f3(ab)} · our previous model ${f3(al)}`],[pk,'Best top score (200 answers per class)',`organisers' baseline ${f3(get('proto',200,0))} · our previous model ${f3(get('lr_sup',200,0))}`],
+    [get('new',25,0),'Best score with few answers (25 per class)',`organisers' baseline ${f3(get('proto',25,0))} · our previous model ${f3(get('lr_sup',25,0))}`],[null,'Best originality','Networks trained so they can\'t tell Madrid from Amsterdam, so what they learn carries over']];
+  $('prizes').innerHTML=items.map((t,i)=>`<div class="prize ${i===3?'mintp':''}"><span class="idx">${i+1}</span><div class="num">${t[0]==null?'Story':f3(t[0])}</div><div class="lbl">${t[1]}</div><div class="vs">${t[2]}</div></div>`).join('');
+  const rows=[['Madrid','Stage 1, 5-fold CV','all',`${f3(P.madrid_cv.mean)} ± ${f3(P.madrid_cv.std)}`,f3(P.madrid_cv.rf),'']];
+  rows.push(['Amsterdam','Zero-shot','0',f3(P.zero_shot.h4d2),f3(P.zero_shot.rf),'']);
+  SH.forEach(n=>rows.push(['Amsterdam','Stage 2',String(n),`${f3(get('new',n,0))} ± ${f3(get('new',n,1))}`,f3(get('proto',n,0)),f3(get('new_1000',n,0)),n===25]));
+  $('resTable').innerHTML='<tr><th>City</th><th>Model</th><th>Labels / class</th><th>h4d2, seed 42</th><th>Organiser baseline</th><th>h4d2, seed 1000</th></tr>'+rows.map(r=>`<tr class="${r[6]?'hl':''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><b>${r[3]}</b></td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');})();
+
+// confusion matrices
+function cmHTML(title,m,labels,accent){
+  const short=labels.map(l=>l.replace('–','–'));
+  let h=`<div class="cmtitle">${title}</div><div class="cm"><div class="h"></div>${short.map(l=>`<div class="h">${l}</div>`).join('')}`;
+  m.forEach((r,i)=>{h+=`<div class="rl">${short[i]}</div>`;r.forEach((v,j)=>{const a=Math.min(1,v*1.25);const bg=i===j?`rgba(35,64,245,${0.15+0.85*a})`:(v>0.12?`rgba(232,71,107,${0.12+v})`:`rgba(35,64,245,${0.05+v*0.6})`);
+    h+=`<div style="background:${bg};color:${(i===j&&v>0.45)?'#fff':'#18213F'};font-weight:${i===j?800:500}">${Math.round(v*100)}%</div>`;});});
+  return h+`</div><div class="note" style="margin-top:8px">Rows: real age · Columns: predicted age</div>`;
+}
+function adj(m){let a=0,t=0;for(let i=0;i<4;i++)for(let j=0;j<4;j++){if(i===j)continue;t+=m[i][j];if(Math.abs(i-j)===1)a+=m[i][j];}return t?a/t:0;}
+function renderCM(n){const c=P.cms;
+  $('cmGrid').innerHTML=[['h4d2 (ours)',c.h4d2[n]],['Our previous model (lr_sup)',c.lr_sup[n]],['Organisers\' baseline',c.proto[n]]].map(t=>`<div class="card white">${cmHTML(t[0],t[1],CLS)}</div>`).join('');
+  const h=c.h4d2[n], pr=c.proto[n];
+  $('cmText').innerHTML=`At n = ${n}, h4d2 gets the diagonal right ${Math.round(avg([0,1,2,3].map(i=>h[i][i]))*100)}% of the time on average, against ${Math.round(avg([0,1,2,3].map(i=>pr[i][i]))*100)}% for the baseline. The biggest remaining mix-ups are 1945–1984 called Pre-1945 (${Math.round(h[1][0]*100)}%) and 1984–2004 called 1945–1984 (${Math.round(h[2][1]*100)}%): buildings from neighbouring eras look alike from space. Of all h4d2's mix-ups, ${Math.round(100*adj(h))}% are between adjacent eras.`;}
+$('cmSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('cmSeg').children].forEach(x=>x.classList.toggle('on',x===b));renderCM(b.dataset.n);});
+renderCM('25');
+
+// ---- neighbour explainer (shared by official results and the model bench)
+function nbHTML(ex,labels){
+  const p=ex.patch,e=ex.effect;if(!p)return '<p class="note">No patch with enough neighbours to show.</p>';
+  const S=30,G=4,K=7,GW=K*(S+G),gap=46,W=3*GW+2*gap,H=GW+34;let g='';
+  const titles=['True age','Model’s own guess','After blending'],subs=['hidden from the model','before blending','what was scored'],keys=['t','r','s'];
+  let nfix=0,nbrk=0,nstill=0,okr=0,oks=0,cnt=0;
+  keys.forEach((k,pi)=>{const x0=pi*(GW+gap);
+    g+=`<text x="${x0}" y="14" font-size="14" font-weight="800" fill="#0E1A4F">${titles[pi]}</text><text x="${x0}" y="29" font-size="11.5" fill="#5D6685">${subs[pi]}</text>`;
+    g+=`<rect x="${x0-4}" y="34" width="${GW+4}" height="${GW+4}" rx="7" fill="#F4F6FC"/>`;
+    p.cells.forEach((c,idx)=>{if(!c)return;const x=x0+(idx%K)*(S+G),y=38+Math.floor(idx/K)*(S+G);
+      g+=`<rect x="${x}" y="${y}" width="${S}" height="${S}" rx="3" fill="${CC[c[k]-1]}" data-t="${labels[c.t-1]} really · guessed ${labels[c.r-1]} · blended ${labels[c.s-1]}${c.sup?' · labelled support pixel':''}"/>`;
+      if(c.sup&&pi>0)g+=`<circle cx="${x+S/2}" cy="${y+S/2}" r="4" fill="#fff"/>`;
+      if(pi===2){if(!c.sup){cnt++;okr+=c.r===c.t;oks+=c.s===c.t;}
+        if(c.r!==c.s){const kind=c.s===c.t?'fix':(c.r===c.t?'brk':'still');kind==='fix'?nfix++:kind==='brk'?nbrk++:nstill++;
+          g+=`<circle cx="${x+S-3}" cy="${y+3}" r="8" fill="${{fix:'#1F9D63',brk:'#D93A3A',still:'#9AA0B5'}[kind]}" stroke="#fff" stroke-width="2"/><text x="${x+S-3}" y="${y+7}" font-size="10" font-weight="800" fill="#fff" text-anchor="middle">${{fix:'✓',brk:'✕',still:'•'}[kind]}</text>`;}}});
+    const cx=x0+3*(S+G),cy=38+3*(S+G);g+=`<rect x="${cx-3}" y="${cy-3}" width="${S+6}" height="${S+6}" rx="5" fill="none" stroke="#E2457A" stroke-width="3"/>`;
+    if(pi<2)g+=`<path d="M${x0+GW+12} ${38+GW/2} l20 0 m-7 -6 l7 6 l-7 6" fill="none" stroke="#5D6685" stroke-width="2.4"/>`;});
+  const cen=p.cells[24],bars=v=>`<div class="bars">${v.map((x,c)=>`<div class="row"><span>${labels[c]}</span><div class="track"><div class="fill" style="width:${(x*100).toFixed(1)}%;background:${CC[c]}"></div></div><b>${Math.round(x*100)}%</b></div>`).join('')}</div>`;
+  const am=v=>v.indexOf(Math.max(...v));
+  const okb=(c)=>c===cen.t-1?'<b class="ok">right</b>':'<b class="no">wrong</b>';
+  const head={fixed:'Blending fixed the centre patch',changed:'Blending changed the centre patch',none:'Blending left this window unchanged'}[p.kind]||'';
+  const pct=e.scored?(100*e.changed/e.scored).toFixed(1):'0';
+  return `<div class="nbwrap"><div class="card white nbgrids"><svg viewBox="0 -2 ${W} ${H+4}">${g}</svg>
+    <div class="nbkey"><span><i style="background:#1F9D63">✓</i>fixed (${nfix})</span><span><i style="background:#D93A3A">✕</i>broken (${nbrk})</span><span><i style="background:#9AA0B5">•</i>changed, still wrong (${nstill})</span><span><i style="background:#fff;border:3px solid #E2457A;border-radius:4px;width:10px;height:10px"></i>centre patch</span><span><i style="background:#fff;border:1px solid #9AA0B5"></i>labelled support pixel</span></div>
+    <div class="nbeff"><b>In this window:</b> ${okr} of ${cnt} right before blending, ${oks} after. <b>Whole city, this draw:</b> blending changed ${e.changed.toLocaleString()} of ${e.scored.toLocaleString()} guesses (${pct}%): ${e.fixed.toLocaleString()} fixed, ${e.broken.toLocaleString()} broken. Macro F1 ${f3(e.f1_raw)} → ${f3(e.f1_blend)}.</div></div>
+    <div class="card nbcen"><h3>${head}: how it was judged</h3><div class="nbcols">
+      <div><h4>1 · Its own guess</h4>${bars(cen.pr)}<p class="verdict">${labels[am(cen.pr)]}: ${okb(am(cen.pr))}</p></div>
+      <div><h4>2 · Its ${p.nb} neighbours within 90 m</h4>${bars(p.vote)}<p class="verdict">weighted vote of their own guesses</p></div>
+      <div><h4>3 · Blended guess</h4>${bars(cen.ps)}<p class="verdict">${labels[am(cen.ps)]}: ${okb(am(cen.ps))} · true age ${labels[cen.t-1]}</p></div></div></div></div>`;
+}
+function nbWire(seg,box,byN,labels,start){const ns=Object.keys(byN).map(Number).sort((a,b)=>a-b);if(!ns.length)return;
+  let cur=ns.includes(start)?start:ns[0];
+  seg.innerHTML=ns.map(n=>`<button data-n="${n}" class="${n===cur?'on':''}">n = ${n}</button>`).join('');
+  const draw=()=>{box.innerHTML=nbHTML(byN[String(cur)],labels);box.querySelectorAll('rect[data-t]').forEach(c=>{c.addEventListener('mousemove',e=>showTip(e,c.dataset.t));c.addEventListener('mouseleave',hideTip);});};
+  seg.onclick=e=>{const b=e.target.closest('button');if(!b)return;cur=+b.dataset.n;[...seg.children].forEach(x=>x.classList.toggle('on',x===b));draw();};draw();}
+if(P.explain){$('nbrs').classList.remove('hidden');$('nbNav').classList.remove('hidden');
+  nbWire($('nbSeg'),$('nbBox'),P.explain.per_n,CLS,25);
+  const T=P.explain.table;$('nbTable').innerHTML='<tr><th>Labels per class</th><th>Own guess only</th><th>After blending (official)</th><th>Change</th><th>Draws where blending helped</th></tr>'+
+    Object.keys(T).map(Number).sort((a,b)=>a-b).map(n=>{const t=T[n],d=t.blend-t.raw;return `<tr><td>${n}</td><td>${f3(t.raw)}</td><td><b>${f3(t.blend)}</b></td><td style="color:${Math.abs(d)<5e-4?'#5D6685':d>0?'#1F9D63':'#D93A3A'};font-weight:700">${Math.abs(d)<5e-4?'±0.000':(d>0?'+':'')+d.toFixed(3)}</td><td>${t.helped} of ${t.draws}</td></tr>`;}).join('');}
+
+$('madridCm').innerHTML=cmHTML(`Madrid 5-fold CV (h4d2 Stage 1): ${f3(P.madrid_cv.mean)} ± ${f3(P.madrid_cv.std)}`,P.madrid_cm,CLS_M);
+
+// ---------------- uploads
+const EV={amsterdam:1945,madrid:1960};
+function parseCSV(text){const lines=text.split(/\r?\n/).filter(l=>l.trim());const head=lines[0].split(',').map(s=>s.trim().replace(/^"|"$/g,'').toLowerCase());
+  const rows=lines.slice(1).map(l=>l.split(','));return {head,rows};}
+function classFromYear(y,city){const ev=EV[city]||1945;if(isNaN(y))return 0;return y<=ev?1:y<=1984?2:y<=2004?3:4;}
+function guessCity(name){name=name.toLowerCase();return name.includes('madrid')?'madrid':'amsterdam';}
+function guessN(name){const m=name.toLowerCase().match(/n(\d+)/);return m?+m[1]:null;}
+const uploads=[];
+function addDataset(ds){uploads.push(ds);renderUploads();}
+function datasetFromCSV(name,text){
+  const {head,rows}=parseCSV(text);const ix=k=>head.indexOf(k);
+  const ip=ix('px_key'),iq=ix('py_key'),ipr=ix('pred_class'),it=ix('true_class'),iw=ix('weighted_mean_year');
+  if(ip<0||iq<0||ipr<0) throw new Error(`${name}: needs columns px_key, py_key, pred_class`);
+  const city=guessCity(name);const N=rows.length;const px=new Int32Array(N),py=new Int32Array(N),pr=new Uint8Array(N),yt=new Uint8Array(N);let lab=false;
+  rows.forEach((r,i)=>{px[i]=+r[ip];py[i]=+r[iq];pr[i]=+r[ipr];if(it>=0){yt[i]=+r[it];lab=true;}else if(iw>=0){yt[i]=classFromYear(parseFloat(r[iw]),city);lab=true;}});
+  return {name,city,n:guessN(name),px,py,pred:pr,y:lab?yt:null};
+}
+function renderUploads(){
+  const out=$('upOut');if(!uploads.length){out.innerHTML='';return;}
+  let rowsH='';
+  uploads.forEach((d,k)=>{const counts=[0,0,0,0];d.pred.forEach(v=>{if(v>=1&&v<=4)counts[v-1]++;});d.counts=counts;
+    d.score=d.y?scoreArr(d.y,d.pred,null):null;
+    rowsH+=`<tr><td><b>${d.name}</b></td><td>${d.city==='madrid'?'Madrid':'Amsterdam'}</td><td>${d.n??'–'}</td><td>${d.pred.length.toLocaleString()}</td><td>${counts.map((c,i)=>`<span class="pill" style="background:${CC[i]};color:${i===1?'#fff':'#0E1A4F'}">${Math.round(100*c/d.pred.length)}%</span>`).join('')}</td><td>${d.score?'<b>'+f3(d.score.macro)+'</b>':'<span class="pill">no labels</span>'}</td><td><button class="play" style="padding:6px 12px;font-size:12.5px" data-k="${k}">View</button></td></tr>`;});
+  out.innerHTML=`<div class="card white" style="overflow:auto"><table class="t"><tr><th>File</th><th>City</th><th>n</th><th>Patches</th><th>Predicted mix (class 1 → 4)</th><th>Macro F1</th><th></th></tr>${rowsH}</table></div><div id="upDetail" style="margin-top:18px"></div>`;
+  out.querySelectorAll('button[data-k]').forEach(b=>b.addEventListener('click',()=>detail(uploads[+b.dataset.k])));
+  detail(uploads[uploads.length-1]);
+}
+function detail(d){
+  const el=$('upDetail');const labels=d.city==='madrid'?CLS_M:CLS;
+  const x0=Math.min(...d.px),y0=Math.min(...d.py);const px=d.px.map(v=>v-x0),py=d.py.map(v=>v-y0);const W=Math.max(...px)+1,H=Math.max(...py)+1;
+  el.innerHTML=`<div class="sim"><div class="mapbox"><div class="maphead"><div class="seg" id="upSeg"><button data-v="pred" class="on">Prediction</button>${d.y?'<button data-v="truth">Real age</button><button data-v="err">Right / wrong</button>':''}</div></div><canvas id="upMap"></canvas><div class="legend" id="upLeg"></div></div>
+    <div><div class="card white"><h3>${d.name}</h3><div class="bigstat"><b>${d.score?f3(d.score.macro):d.pred.length.toLocaleString()}</b><span>${d.score?'macro F1 against the labels in your file':'patches predicted (add labels to score)'}</span></div><div class="bars" id="upBars"></div>
+    <div class="note" style="margin-top:8px">${d.score?'Bars: recall per age class.':'Bars: share of patches predicted in each age class.'}</div></div>${d.y?`<div class="card white" style="margin-top:14px">${cmHTML('Confusion matrix',confusion(d.y,d.pred,null),labels)}</div>`:''}</div></div>`;
+  const mp=makeMap($('upMap'),px,py,W,H,d.pred.length<8000);let v='pred';
+  const draw=()=>{mp.draw(v==='truth'?(i=>CC[d.y[i]-1]):v==='pred'?(i=>CC[d.pred[i]-1]):(i=>d.pred[i]===d.y[i]?'#3A4C9A':'#FF5A7A'));$('upLeg').innerHTML=legendHTML(v==='pred'?'truth':v,labels);};
+  draw();
+  $('upSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;v=b.dataset.v;[...$('upSeg').children].forEach(x=>x.classList.toggle('on',x===b));draw();});
+  if(d.score) recallBars($('upBars'),d.score.rec,labels); else recallBars($('upBars'),d.counts.map(c=>c/d.pred.length),labels);
+}
+function handleFiles(files){[...files].forEach(f=>{const r=new FileReader();r.onload=()=>{try{addDataset(datasetFromCSV(f.name,r.result));}catch(err){$('upOut').insertAdjacentHTML('afterbegin',`<div class="card pink" style="margin-bottom:10px">${err.message}</div>`);}};r.readAsText(f);});}
+const drop=$('drop');
+$('file').addEventListener('change',e=>handleFiles(e.target.files));
+['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>handleFiles(e.dataTransfer.files));
+
+// ---------------- model bench (only when served by python -m h4d2.app)
+if(window.H4D2_APP){
+  document.querySelectorAll('.appOnly').forEach(e=>e.classList.remove('hidden'));
+  const VIEW=window.H4D2_VIEW==='bench'?'bench':'results';
+  document.body.classList.add(VIEW==='bench'?'benchpage':'respage');
+  if(VIEW==='bench')document.title='Madrid2Dam · h4d2 model bench';
+  const api=(p,o)=>fetch(p,o).then(async r=>{let j;try{j=await r.json();}catch(e){throw new Error(r.statusText);}if(!r.ok||j.error)throw new Error(j.error||r.statusText);return j;});
+  const MCOL={h4d2:'#2340F5',lr_sup:'#8C9BEA',proto:'#A3A9BC'}, EXTRA=['#E8476B','#F2B84B','#2A9D8F','#9B5DE5','#FF7A00','#14205F'];
+  const colOf=(name,i)=>MCOL[name]||EXTRA[i%EXTRA.length];
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let ST=null, shotsInit=false, polling=null;
+  function labelsFor(ev){return [`Pre-${ev}`,`${ev}–1984`,'1984–2004','2004–2024'];}
+  function autoModes(){const def=$('bDataset').value==='Madrid'?'madrid':'saved';document.querySelectorAll('#bModels select[data-m]').forEach(x=>{if(!x.dataset.touched)x.value=def;});}
+  function dsInfo(){const d=(ST.datasets||[]).find(x=>x.name===$('bDataset').value);if(!d){$('bDsInfo').textContent='No dataset found. Set H4D_DATA_DIR or add a city.';return;}
+    $('bDsInfo').innerHTML=d.builtin?`Built-in · class 1/2 boundary <b>${d.event}</b>`:`Added city · boundary <b>${d.event}</b> · ${(d.pixels||0).toLocaleString()} pixels · per class ${(d.counts||[]).join(' / ')}`;}
+  async function refresh(selDs,selModel){
+    ST=await api('/api/state');
+    const ds=$('bDataset'),cur=selDs||ds.value;
+    ds.innerHTML=ST.datasets.map(d=>`<option value="${esc(d.name)}">${esc(d.name)}${d.builtin?'':' (added)'}</option>`).join('');
+    if(cur&&ST.datasets.some(d=>d.name===cur))ds.value=cur; dsInfo();
+    const had=[...document.querySelectorAll('#bModels input')].length, checked=new Set([...document.querySelectorAll('#bModels input:checked')].map(x=>x.value));
+    if(selModel)checked.add(selModel);
+    const touched={};document.querySelectorAll('#bModels select[data-m]').forEach(x=>{if(x.dataset.touched)touched[x.dataset.m]=x.value;});
+    $('bModels').innerHTML=ST.models.map(m=>`<label class="chk"><input type="checkbox" value="${esc(m.name)}" ${(!had&&m.builtin)||checked.has(m.name)?'checked':''}>${esc(m.label)}${m.h4d2pkl?' <span class="pill">h4d2 pickle</span>':''}</label>`+
+      (m.h4d2pkl?`<div class="pmode">Mode <select data-m="${esc(m.name)}"><option value="saved">Amsterdam saved models (n = ${(m.available_n||[5,25,50,100,200]).join(', ')})</option><option value="madrid">Madrid model (n = 'madrid')</option></select></div>`:'')).join('');
+    document.querySelectorAll('#bModels select[data-m]').forEach(x=>{if(touched[x.dataset.m]){x.value=touched[x.dataset.m];x.dataset.touched='1';}x.addEventListener('change',()=>{x.dataset.touched='1';});});
+    autoModes();
+    if(!shotsInit){$('bShots').innerHTML=ST.shots.map(n=>`<label class="chk" style="margin:0"><input type="checkbox" value="${n}" checked>${n}</label>`).join('');shotsInit=true;}
+    board(ST.leaderboard);
+  }
+  const fmtT=s=>s==null?'':(s>=60?`${Math.floor(s/60)}m ${String(Math.round(s%60)).padStart(2,'0')}s`:`${Math.round(s)}s`);
+  function status(title,msg,frac,time,mode,stages){$('bProg').style.display='block';$('bProgTitle').textContent=title;$('bProgMsg').textContent=msg||'';
+    $('bProgBar').style.width=Math.max(2,Math.round((frac||0)*100))+'%';$('bProgTime').textContent=time||'';
+    $('bProgWrap').className='progress '+(mode||'');$('bDot').style.display=mode==='run'?'block':'none';
+    if(stages){const groups=[];stages.forEach(st=>{let g=groups.find(x=>x.name===st.group);if(!g){g={name:st.group,items:[]};groups.push(g);}g.items.push(st);});
+      $('bStages').innerHTML=groups.map(g=>`<div class="stg"><div class="gl">${esc(g.name)}</div><div class="chips">${g.items.map(st=>`<span class="chip ${st.status}">${esc(st.label)}</span>`).join('')}</div></div>`).join('');}
+    else $('bStages').innerHTML='';}
+  function wireDrop(dropId,fileId,handler){const d=$(dropId);$(fileId).addEventListener('change',e=>{if(e.target.files[0])handler(e.target.files[0]);e.target.value='';});
+    ['dragenter','dragover'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.add('over');}));
+    ['dragleave','drop'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.remove('over');}));
+    d.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handler(f);});}
+  wireDrop('bDsDrop','bDsFile',async f=>{const name=$('bDsName').value.trim()||f.name.replace(/\.parquet$/i,'');const ev=+$('bDsEvent').value||1945;
+    status('Adding city','Uploading and checking '+f.name+' …',0.35,'','run');
+    try{const m=await api(`/api/dataset?name=${encodeURIComponent(name)}&event=${ev}`,{method:'POST',body:f});status('City added',`${m.name}: ${m.pixels.toLocaleString()} labelled pixels (per class ${m.counts.join(' / ')})`,1,'','ok');await refresh(m.name);}
+    catch(e){status('Could not add the city',e.message,1,'','bad');}});
+  wireDrop('bMdDrop','bMdFile',async f=>{status('Adding model','Uploading and loading '+f.name+' …',0.35,'','run');
+    try{const m=await api(`/api/model?name=${encodeURIComponent(f.name)}`,{method:'POST',body:f});status('Model added',`${m.name}: ${m.h4d2pkl?'our h4d2 pickle: runs its saved models, Amsterdam (n = '+(m.available_n||[]).join(', ')+') or Madrid. Pick the mode under the model list, or run the parity check.':m.kind==='few-shot'?'few-shot model (adapts from the labelled pixels)':'fixed model (pre-fitted per n, scored once per n on every pixel)'}`,1,'','ok');await refresh(null,m.name);}
+    catch(e){status('Could not load the model',e.message,1,'','bad');}});
+  $('bDataset').addEventListener('change',()=>{dsInfo();autoModes();});
+  $('bRun').addEventListener('click',async()=>{
+    const models=[...document.querySelectorAll('#bModels input:checked')].map(x=>x.value), shots=[...document.querySelectorAll('#bShots input:checked')].map(x=>+x.value);
+    if(!models.length){status('Nothing to run','Tick at least one model.',0);return;} if(!shots.length){status('Nothing to run','Tick at least one label budget.',0);return;}
+    $('bRun').disabled=true;status('Starting','Queued',0);
+    try{const {id}=await api('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataset:$('bDataset').value,models,shots,trials:+$('bTrials').value||10,seed:+$('bSeed').value||42,modes:Object.fromEntries([...document.querySelectorAll('#bModels select[data-m]')].map(x=>[x.dataset.m,x.value]))})});poll(id);}
+    catch(e){status('Could not start',e.message,0);$('bRun').disabled=false;}});
+  $('bParity').addEventListener('click',async()=>{
+    const pk=(ST.models||[]).filter(m=>m.h4d2pkl), checked=new Set([...document.querySelectorAll('#bModels input:checked')].map(x=>x.value));
+    if(!pk.length){status('No h4d2 pickle','Drop h4d2_model.pkl on “Drop a model .pkl” first.',0,'','bad');return;}
+    const m=pk.find(x=>checked.has(x.name))||pk[0];
+    $('bParity').disabled=true;$('bRun').disabled=true;status('Parity check','Queued',0,'','run');
+    try{const {id}=await api('/api/parity',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataset:$('bDataset').value,model:m.name})});pollParity(id);}
+    catch(e){status('Could not start the parity check',e.message,0,'','bad');$('bParity').disabled=false;$('bRun').disabled=false;}});
+  function pollParity(id){clearInterval(polling);polling=setInterval(async()=>{let j;try{j=await api('/api/job?id='+id);}catch(e){return;}
+    const t=j.elapsed!=null?('Elapsed '+fmtT(j.elapsed)+(j.eta!=null&&j.status==='running'?' · about '+fmtT(j.eta)+' left':'')):'';
+    if(j.status==='done'){clearInterval(polling);status('Parity check finished',j.message,1,t,'ok',j.stages);$('bParity').disabled=false;$('bRun').disabled=false;renderParity(j.result);setTimeout(()=>$('bParityOut').scrollIntoView({behavior:'smooth'}),200);}
+    else if(j.status==='error'){clearInterval(polling);status('Parity check failed',j.message,j.progress,t,'bad',j.stages);$('bParity').disabled=false;$('bRun').disabled=false;}
+    else status(`Parity check · ${Math.round((j.progress||0)*100)}%`,j.message,j.progress,t,'run',j.stages);},800);}
+  function renderParity(p){const pct=v=>(v*100).toFixed(v===1?0:3)+'%',e=v=>v===0?'0':v.toExponential(1);
+    const all=p.rows.every(r=>r.agree===1&&r.agree_public===1);
+    $('bParityOut').innerHTML=`<div class="card white"><h3>Parity check · ${esc(p.model)}.pkl vs built-in h4d2 · ${esc(p.dataset)} · ${p.mode==='madrid'?'Madrid mode':'Amsterdam saved models'}</h3>
+      <p style="margin:4px 0 12px">${all?'<span class="parok">✓ 100% agreement</span> on every compared model.':'<span class="parno">Not identical</span>: see the differences below.'} ${p.pixels.toLocaleString()} identical pixels · ran in ${Math.round(p.seconds)} s</p>
+      <table class="t"><tr><th>Saved model</th><th>Pixels scored</th><th>Agreement (pickle internals)</th><th>Agreement (pickle predict())</th><th>Macro F1 built-in</th><th>Macro F1 pickle</th><th>Max |Δ probability|</th><th>Max |Δ weights|</th></tr>
+      ${p.rows.map(r=>`<tr><td><b>${esc(r.target)}</b>${r.support_in_city?`<div class="note">${r.support_in_city} support pixels excluded${r.same_support===false?' · support differs!':''}</div>`:''}</td><td>${r.scored.toLocaleString()}</td><td class="${r.agree===1?'parok':'parno'}">${pct(r.agree)}</td><td class="${r.agree_public===1?'parok':'parno'}">${pct(r.agree_public)}</td><td>${f3(r.f1_builtin)}</td><td>${f3(r.f1_pkl)}${Math.abs(r.f1_pkl_public-r.f1_pkl)>1e-12?` (predict(): ${f3(r.f1_pkl_public)})`:''}</td><td>${e(r.max_abs_dp)}</td><td>${e(r.max_abs_dheads)}</td></tr>`).join('')}</table>
+      <p class="note" style="margin:10px 0 0">${esc(p.note)}</p></div>`;}
+  function poll(id){clearInterval(polling);polling=setInterval(async()=>{let j;try{j=await api('/api/job?id='+id);}catch(e){return;}
+    const t=j.elapsed!=null?('Elapsed '+fmtT(j.elapsed)+(j.eta!=null&&j.status==='running'?' · about '+fmtT(j.eta)+' left':'')):'';
+    if(j.status==='done'){clearInterval(polling);status('Finished',j.message,1,t,'ok',j.stages);$('bRun').disabled=false;const r=await api('/api/result?id='+id);renderRun(r);refresh();setTimeout(()=>$('bResult').scrollIntoView({behavior:'smooth'}),300);}
+    else if(j.status==='error'){clearInterval(polling);status('Run failed',j.message,j.progress,t,'bad',j.stages);$('bRun').disabled=false;}
+    else status(`Running simulation · ${Math.round((j.progress||0)*100)}%`,j.message,j.progress,t,'run',j.stages);},800);}
+  function board(rows){$('bBoard').innerHTML='<tr><th>When</th><th>City</th><th>Model</th><th>Type</th><th>Average F1</th><th>n = 25</th><th>Peak</th><th>Zero-shot</th></tr>'+
+    (rows.length?rows.map(r=>`<tr class="click" data-run="${r.run}"><td>${esc(r.created)}</td><td>${esc(r.dataset)}</td><td><b>${esc(r.model)}</b></td><td>${r.kind}</td><td><b>${f3(r.avg)}</b></td><td>${f3(r.n25)}</td><td>${f3(r.peak)}</td><td>${f3(r.zero_shot)}</td></tr>`).join(''):'<tr><td colspan="8" class="note">No runs yet.</td></tr>');
+    $('bBoard').querySelectorAll('tr[data-run]').forEach(tr=>tr.addEventListener('click',async()=>{const r=await api('/api/result?id='+tr.dataset.run);renderRun(r);$('bResult').scrollIntoView({behavior:'smooth'});}));}
+  function curveMulti(svg,r,names){
+    const W=640,H=360,L=56,R=20,T=40,B=58, SHN=r.shots; if(!SHN.length){svg.innerHTML='';return;}
+    const lx=SHN.length>1?SHN.map(n=>Math.log2(n)):[0]; const x0=Math.min(...lx),x1=Math.max(...lx);
+    const x=n=>SHN.length>1?L+(Math.log2(n)-x0)/(x1-x0)*(W-L-R):(L+W-R)/2;
+    let lo=1,hi=0;names.forEach(nm=>SHN.forEach(n=>{const v=r.models[nm].per_n[n];if(v){lo=Math.min(lo,v[0]-v[1]);hi=Math.max(hi,v[0]+v[1]);}}));
+    lo=Math.max(0,Math.floor((lo-0.03)*20)/20);hi=Math.min(1,Math.ceil((hi+0.02)*20)/20);if(hi<=lo)hi=lo+0.1;
+    const y=v=>T+(1-(v-lo)/(hi-lo))*(H-T-B);let g='';
+    for(let v=lo;v<=hi+1e-9;v+=0.05){g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#E7EAF6"/><text x="${L-10}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#5D6685">${v.toFixed(2)}</text>`;}
+    SHN.forEach(n=>{g+=`<text x="${x(n)}" y="${H-B+20}" text-anchor="middle" font-size="12" fill="#5D6685">${n}</text><text x="${x(n)}" y="${H-B+34}" text-anchor="middle" font-size="10.5" fill="#9AA1BC">log2 ${Math.log2(n).toFixed(1)}</text>`;});
+    g+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Labelled pixels per class (log2 scale)</text><text transform="translate(16,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Macro F1</text>`;
+    names.forEach((nm,i)=>{const m=r.models[nm],c=colOf(nm,i),pts=SHN.filter(n=>m.per_n[n]).map(n=>[x(n),m.per_n[n][0],m.per_n[n][1],n]);
+      if(pts.length>1)g+=`<polyline points="${pts.map(p=>p[0]+','+y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${nm==='h4d2'?3.5:2.4}"/>`;
+      pts.forEach(p=>{if(p[2]>0)g+=`<line x1="${p[0]}" x2="${p[0]}" y1="${y(p[1]+p[2])}" y2="${y(p[1]-p[2])}" stroke="${c}" stroke-width="1.8"/><line x1="${p[0]-5}" x2="${p[0]+5}" y1="${y(p[1]+p[2])}" y2="${y(p[1]+p[2])}" stroke="${c}" stroke-width="1.8"/><line x1="${p[0]-5}" x2="${p[0]+5}" y1="${y(p[1]-p[2])}" y2="${y(p[1]-p[2])}" stroke="${c}" stroke-width="1.8"/>`;
+        g+=`<circle cx="${p[0]}" cy="${y(p[1])}" r="5" fill="#fff" stroke="${c}" stroke-width="2.5" data-t="${esc(m.label)}<br>n = ${p[3]}: <b>${f3(p[1])}</b> ± ${f3(p[2])}"/>`;});
+      g+=`<g transform="translate(${L+8+(i%3)*190},${8+Math.floor(i/3)*16})"><rect width="14" height="4" y="5" rx="2" fill="${c}"/><text x="20" y="11" font-size="12" fill="#18213F">${esc(m.label)}</text></g>`;});
+    svg.innerHTML=g;svg.querySelectorAll('circle[data-t]').forEach(c=>{c.addEventListener('mousemove',e=>showTip(e,c.dataset.t));c.addEventListener('mouseleave',hideTip);});}
+  function renderRun(r){
+    const names=Object.keys(r.models), labs=labelsFor(r.event);
+    let h=`<div class="card mint" style="margin-bottom:16px"><h3>${esc(r.dataset)} · ${r.pixels.toLocaleString()} labelled pixels</h3><p>Seed ${r.seed} · ${r.trials} draws per size · n = ${r.shots.join(', ')} · per-class pixels ${r.counts.join(' / ')} · ran in ${Math.round(r.seconds)} s · ${esc(r.created)}</p></div>`;
+    const peakOf=m=>{const v=Object.values(m.per_n).map(x=>x[0]);return v.length?Math.max(...v):null;};
+    h+=`<div class="mkpi">${names.map((nm,i)=>{const m=r.models[nm],pk=peakOf(m);return `<div class="kc"><div class="nm"><i style="background:${colOf(nm,i)}"></i>${esc(m.label)}</div>${m.mode==='madrid'?`<div class="vals"><div><b>${f3(m.zero_shot)}</b>macro F1</div></div>`:`<div class="vals"><div><b>${f3(m.avg)}</b>average</div><div><b>${f3((m.per_n['25']||[])[0])}</b>n = 25</div><div><b>${f3(pk)}</b>peak</div></div>`}${m.zero_shot!=null&&m.mode!=='madrid'?`<div class="note" style="margin-top:6px">Zero-shot ${f3(m.zero_shot)}</div>`:''}${m.mode?`<div class="note" style="margin-top:6px">${m.mode==='madrid'?'One prediction, no labels of this city used; scored on '+esc((m.scored||{}).rule||'every pixel')+'.':'Saved Amsterdam models, no fresh draws; each scored on '+esc((m.scored||{}).rule||'')+'.'}</div>`:m.kind==='fixed'?'<div class="note" style="margin-top:6px">Fixed model: one prediction per n, scored on every pixel.</div>':''}</div>`;}).join('')}</div>`;
+    const best=(fn)=>{let bn=null,bv=-1;names.forEach(nm=>{const v=fn(r.models[nm]);if(v!=null&&v>bv){bv=v;bn=nm;}});return bn?[bn,bv]:null;};
+    const P1=[['Best average F1',best(m=>m.avg)],['Best peak F1',best(m=>peakOf(m))],['Best at n = 25',best(m=>(m.per_n['25']||[null])[0])],['Best zero-shot',best(m=>m.zero_shot)]];
+    h+=`<div class="prizes2" style="margin-top:18px">${P1.map((p,i)=>`<div class="prize ${i===3?'mintp':''}"><span class="idx">${i+1}</span><div class="num">${p[1]?f3(p[1][1]):'–'}</div><div class="lbl">${p[0]}</div><div class="vs">${p[1]?esc(r.models[p[1][0]].label):'not available for these models'}</div></div>`).join('')}</div>`;
+    const ref=names.includes('proto')?'proto':null;
+    h+=`<div class="grid2" style="grid-template-columns:1.5fr 1fr;margin-top:18px"><div class="chartcard"><div class="top"><h3>Macro F1 vs labelled pixels per class</h3></div><svg id="bCurve" viewBox="0 0 640 360" width="100%"></svg></div>
+      <div class="card white" style="overflow:auto"><h3>Scores (mean ± std over draws)</h3><table class="t"><tr><th>n</th>${names.map(nm=>`<th>${esc(r.models[nm].label)}</th>`).join('')}</tr>${r.shots.map(n=>`<tr><td>${n}</td>${names.map(nm=>{const v=r.models[nm].per_n[n];return `<td>${v?`<b>${f3(v[0])}</b> ± ${f3(v[1])}`:'–'}</td>`;}).join('')}</tr>`).join('')}<tr><td><b>avg</b></td>${names.map(nm=>`<td><b>${f3(r.models[nm].avg)}</b></td>`).join('')}</tr></table></div></div>`;
+    h+=`<div class="sim" style="margin-top:18px"><div class="mapbox"><div class="maphead"><div class="seg" id="bView"><button data-v="pred" class="on">Prediction</button><button data-v="truth">Real age</button><button data-v="err">Right / wrong</button></div></div><canvas id="bMap"></canvas><div class="legend" id="bLeg"></div></div>
+      <div><div class="card white"><div class="field"><label>Model</label><select id="bMapModel">${names.map(nm=>`<option value="${esc(nm)}">${esc(r.models[nm].label)}</option>`).join('')}</select></div>
+      <div class="field"><label>Labelled pixels per class</label><input type="range" id="bMapN" min="0" max="0" step="1"><div class="ticks note" id="bMapTicks" style="display:flex;justify-content:space-between"></div></div>
+      <div class="bigstat"><b id="bMapF1">–</b><span>score (macro F1) on this map's random pick</span></div><div class="bars" id="bMapBars"></div></div>
+      <div class="card white" style="margin-top:14px" id="bCm"></div></div></div>`;
+    const exN=names.find(nm=>r.models[nm].explain);
+    if(exN)h+=`<div class="card white" style="margin-top:18px"><h3>How neighbours changed the guess · ${esc(r.models[exN].label)}, first draw</h3><p class="note" style="margin:0 0 10px">A real ${esc(r.dataset)} window: true ages, the model's own guesses, and the blended guesses that were scored. Only h4d2 blends with neighbours; other models are scored on their own guesses.</p><div class="seg light" id="bNbSeg"></div><div id="bNbBox"></div></div>`;
+    if(ref&&names.length>1)h=h.replace('<div class="sim" style="margin-top:18px">',`<div class="chartcard" style="margin-top:18px"><div class="top"><h3>Gain over the organiser baseline (macro F1)</h3></div><svg id="bGain" viewBox="0 0 900 300" width="100%"></svg></div><div class="sim" style="margin-top:18px">`);
+    $('bResult').innerHTML=h; curveMulti($('bCurve'),r,names);
+    if(ref&&names.length>1){const others=names.filter(n=>n!==ref),svg=$('bGain'),W=900,H=300,L=46,R=12,T=24,B=40,SHN=r.shots;
+      const gains=others.map(nm=>SHN.map(n=>r.models[nm].per_n[n]&&r.models[ref].per_n[n]?r.models[nm].per_n[n][0]-r.models[ref].per_n[n][0]:0));
+      let mx=Math.max(0.02,...gains.flat().map(Math.abs));mx=Math.ceil(mx*20)/20;const y=v=>T+(1-(v+mx)/(2*mx))*(H-T-B);let g='';
+      for(let v=-mx;v<=mx+1e-9;v+=mx/2){g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${Math.abs(v)<1e-9?'#9AA1BC':'#E7EAF6'}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5D6685">${v>=0?'+':''}${v.toFixed(2)}</text>`;}
+      const gw=(W-L-R)/SHN.length,bw=Math.min(46,gw*0.8/others.length);
+      SHN.forEach((n,i)=>{const cx=L+(i+0.5)*gw;g+=`<text x="${cx}" y="${H-B+20}" text-anchor="middle" font-size="12" fill="#5D6685">n = ${n}</text>`;
+        others.forEach((nm,k)=>{const v=gains[k][i],x0=cx-(others.length*bw)/2+k*bw,c=colOf(nm,names.indexOf(nm));
+          g+=`<rect x="${x0+2}" y="${Math.min(y(v),y(0))}" width="${bw-4}" height="${Math.max(1,Math.abs(y(v)-y(0)))}" rx="5" fill="${c}" data-t="${esc(r.models[nm].label)} at n = ${n}: ${v>=0?'+':''}${v.toFixed(3)}"/>`;
+          g+=`<text x="${x0+bw/2}" y="${v>=0?y(v)-5:y(v)+13}" text-anchor="middle" font-size="11" font-weight="700" fill="#0E1A4F">${v>=0?'+':''}${v.toFixed(3)}</text>`;});});
+      svg.innerHTML=g;svg.querySelectorAll('rect[data-t]').forEach(c=>{c.addEventListener('mousemove',e=>showTip(e,c.dataset.t));c.addEventListener('mouseleave',hideTip);});}
+    const M=r.map, mp=makeMap($('bMap'),M.px,M.py,M.w,M.h,M.px.length<8000); let view='pred';
+    function opts(){const m=r.models[$('bMapModel').value];return Object.keys(m.pred).map(Number).sort((a,b)=>a-b);}
+    function setSlider(){const o=opts();$('bMapN').max=o.length-1;$('bMapN').value=Math.min(o.indexOf(25)>=0?o.indexOf(25):0,o.length-1);$('bMapTicks').innerHTML=o.map(n=>`<span>${n}</span>`).join('');}
+    function draw(){const nm=$('bMapModel').value,m=r.models[nm],o=opts(),n=o[+$('bMapN').value],p=m.pred[String(n)],sup=m.sup&&m.sup[String(n)]?m.sup[String(n)]:((n&&M.sup[String(n)])||[]);
+      const mask=new Uint8Array(M.y.length).fill(1);if(m.kind==='few-shot'||m.sup)for(const i of sup)mask[i]=0;
+      const col=view==='truth'?(i=>CC[M.y[i]-1]):view==='pred'?(i=>CC[p[i]-1]||'#555'):(i=>p[i]===M.y[i]?'#3A4C9A':'#FF5A7A');
+      mp.draw(col,view==='truth'||(m.kind!=='few-shot'&&!m.sup)?null:sup);$('bLeg').innerHTML=legendHTML(view,labs);
+      const s=scoreArr(M.y,p,mask);$('bMapF1').textContent=f3(s.macro);recallBars($('bMapBars'),s.rec,labs);
+      const cm=m.cms[String(n)];$('bCm').innerHTML=cm?cmHTML(m.mode==='madrid'?'Confusion matrix · Madrid model':m.mode?`Confusion matrix · saved n = ${n}`:`Confusion matrix · n = ${n} (mean over draws)`,cm,labs):'<p class="note">Zero-shot: no labelled pixels.</p>';}
+    $('bMapModel').addEventListener('change',()=>{setSlider();draw();});$('bMapN').addEventListener('input',draw);
+    $('bView').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;view=b.dataset.v;[...$('bView').children].forEach(x=>x.classList.toggle('on',x===b));draw();});
+    setSlider();draw();
+    if(exN)nbWire($('bNbSeg'),$('bNbBox'),r.models[exN].explain,labs,25);
+  }
+  refresh().catch(e=>status('Bench not reachable',e.message,0));
+}
+
+// live results injected by the hub runner notebook
+if(LIVE){
+  $('liveBanner').classList.remove('hidden');
+  $('liveBanner').innerHTML=`<h3>Live run on the hub</h3><p>${LIVE.note||''}</p>`;
+  LIVE.datasets.forEach(d=>addDataset({name:d.name,city:d.city,n:d.n,px:Int32Array.from(d.px),py:Int32Array.from(d.py),pred:Uint8Array.from(d.pred),y:d.y?Uint8Array.from(d.y):null}));
+  setTimeout(()=>document.getElementById('upload').scrollIntoView({behavior:'smooth'}),400);
+}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# versions used on the hackathon hub (Python 3.12)
+numpy==2.5.4
+pandas==2.3.3
+scipy==1.18.1
+torch==2.15.0
+joblib==1.6.0
+pyarrow==26.0.1
+scikit-learn==1.9.1
