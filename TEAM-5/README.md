@@ -22,4 +22,4 @@ The sample budgets and trial count are configurable. Keep the supplied parquet f
 
 ## Submitting the notebook
 
-Submit `1_Few_Shot_Transfer.ipynb` as the notebook deliverable. Include `5-Improved_Transfer.py` and `requirements.txt` so it can run on the grader's environment. Include the two parquet files only if the submission portal permits the dataset size; otherwise submit code and note that the supplied evaluation data must be placed in `data/`. The notebook is a wrapper that runs the same script, so its parameters and outputs stay reproducible.
+Submit `1_Few_Shot_Transfer.ipynb` as the notebook deliverable. Include `5-Improved_Transfer.py` and `requirements.txt` so it can run on the grader's environment. Include the two parquet files only if the submission portal permits the dataset size; otherwise submit code and note that the supplied evaluation data must be placed in `data/`. The notebook now embeds the complete training/evaluation implementation and can also run from the companion script. Its default evaluation covers all five official Amsterdam budgets.
