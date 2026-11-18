@@ -1,0 +1,22 @@
+{
+  "5": {
+    "method": "blend",
+    "align": true
+  },
+  "25": {
+    "method": "stack_et",
+    "align": false
+  },
+  "50": {
+    "method": "stack_et",
+    "align": true
+  },
+  "100": {
+    "method": "stack_et",
+    "align": false
+  },
+  "200": {
+    "method": "stack_et",
+    "align": false
+  }
+}
