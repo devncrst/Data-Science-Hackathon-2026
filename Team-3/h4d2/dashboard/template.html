@@ -192,12 +192,26 @@ nav a.toBench{color:var(--blue)}
 .howread{font-size:13.5px;color:var(--muted);margin:6px 0 12px;line-height:1.55}
 .howread b{color:var(--ink)}
 @media(max-width:900px){.steps4,.gloss{grid-template-columns:1fr}}
+
+/* questions, pipeline, training */
+.q3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px}
+.q3 .card h3{margin-top:0}
+.q3 .card ul{margin:8px 0 10px 18px;padding:0;font-size:13.8px;line-height:1.55}
+.q3 .term{display:inline-block;font-size:12px;font-weight:800;color:var(--blue);background:#E6EBFF;border-radius:999px;padding:3px 10px;margin-bottom:8px}
+.q3 .go{font-size:13px;font-weight:700}
+.pipe svg{width:100%;height:auto;display:block}
+.pipe2{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.pipe2 .card p,.pipe2 .card li{font-size:13.6px;line-height:1.55}
+.pipe2 .card ul{margin:6px 0 0 18px;padding:0}
+.tr2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+.tr2 svg{width:100%;height:auto;display:block}
+@media(max-width:900px){.q3,.pipe2,.tr2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav><div class="wrap">
   <div class="brand"><i></i>&nbsp;&nbsp;&nbsp;Madrid2Dam · h4d2</div>
-  <a href="/" class="appOnly hidden toResults">← Our results</a><a href="#start" class="resOnly">Start here</a><a href="#sim" class="resOnly">Simulator</a><a href="#curve" class="resOnly">Scores</a><a href="#errors" class="resOnly">Errors</a><a href="#nbrs" id="nbNav" class="hidden resOnly">Neighbours</a><a href="#upload" class="resOnly">Your data</a><a href="#method" class="resOnly">Method</a><a href="/bench" class="appOnly hidden toBench">Model bench →</a>
+  <a href="/" class="appOnly hidden toResults">← Our results</a><a href="#start" class="resOnly">Start here</a><a href="#questions" class="resOnly">Questions</a><a href="#pipeline" class="resOnly">Data</a><a href="#sim" class="resOnly">Simulator</a><a href="#curve" class="resOnly">Scores</a><a href="#errors" class="resOnly">Errors</a><a href="#nbrs" id="nbNav" class="hidden resOnly">Neighbours</a><a href="#upload" class="resOnly">Your data</a><a href="#method" class="resOnly">Method</a><a href="/bench" class="appOnly hidden toBench">Model bench →</a>
 </div></nav>
 
 <header class="hero">
@@ -280,6 +294,69 @@ nav a.toBench{color:var(--blue)}
     <div class="card white"><h4>Neighbours</h4><p>Patches within 90 m. Buildings next to each other are usually from the same era, so the model also looks at the neighbourhood.</p></div>
     <div class="card white"><h4>Hidden test</h4><p>Data the organisers keep secret and use to score every team fairly. Our numbers here use the data we were given, so hidden-test scores may be a little lower.</p></div>
   </div>
+</section>
+
+<section id="questions">
+  <div class="sec-h"><span class="tag">?</span><h2>Three questions that shaped our work</h2></div>
+  <p class="sub">Before writing any code we asked three questions. Every part of h4d2 is an answer to one of them.</p>
+  <div class="q3">
+    <div class="card"><span class="term">Distribution shift</span><h3>1 · What changes between cities?</h3>
+      <ul><li><b>Climate and greenery:</b> dry Madrid against green, rainy Amsterdam, so the same kind of building looks different from space.</li>
+      <li><b>Building materials and roofs</b> differ, and so does how they reflect light.</li>
+      <li><b>City layout:</b> street patterns, density and how much open ground there is.</li>
+      <li><b>When the city grew:</b> the oldest age group ends in 1960 in Madrid but 1945 in Amsterdam.</li>
+      <li><b>Light and cloud:</b> sun angle, haze and cloudy summers change what the satellite sees.</li></ul>
+      <p class="note" style="margin:0 0 8px">When the data a model learned from differs from the data it is used on, that is called <b>distribution shift</b>.</p>
+      <a class="go" href="#method">See how the model copes ↓</a></div>
+    <div class="card mint"><span class="term">Transfer learning · domain adaptation</span><h3>2 · What knowledge can we reuse?</h3>
+      <ul><li><b>New buildings leave the same trace over time in any city:</b> greenery drops and built-up surface rises in the year they go up.</li>
+      <li><b>Neighbours share an era:</b> whole districts were built at once, so nearby patches help each other.</li>
+      <li><b>We keep the Madrid model and only nudge it</b> with the few Amsterdam answers, instead of starting from zero.</li></ul>
+      <p class="note" style="margin:0 0 8px">Reusing what was learned in one place is <b>transfer learning</b>; adjusting it to a new place is <b>domain adaptation</b>.</p>
+      <a class="go" href="#method">How h4d2 reuses Madrid ↓</a> · <a class="go" href="#nbrs">What neighbours change ↓</a></div>
+    <div class="card"><span class="term">Fair evaluation</span><h3>3 · How will we know it works elsewhere?</h3>
+      <ul><li><b>Score only patches the model was never told about.</b></li>
+      <li><b>Average 10 random picks</b> of labelled patches, so one lucky pick can't fool us.</li>
+      <li><b>Test every budget,</b> from 5 to 200 answers per class.</li>
+      <li><b>Look at each age class,</b> not just the total.</li>
+      <li><b>Win clearly over the organisers' baseline.</b></li>
+      <li><b>Zero-shot check:</b> 0.594 in Amsterdam with no Amsterdam answers at all.</li>
+      <li><b>Madrid check:</b> 0.715 ± 0.007 across 5 held-out folds (5-fold cross-validation).</li></ul>
+      <a class="go" href="#curve">Scores ↓</a> · <a class="go" href="#errors">Per-class mistakes ↓</a></div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="sec-h"><span class="tag">⇢</span><h2>From raw data to predictions</h2></div>
+  <p class="sub">What happens to the satellite data, step by step, exactly as our code does it.</p>
+  <div class="card white pipe"><svg id="pipeSvg" viewBox="0 0 1180 300"></svg></div>
+  <div class="pipe2">
+    <div class="card"><h3>1 · Loading the files</h3>
+      <p>We read the organisers' files <code>madrid_train.parquet</code> (learning city) and <code>amsterdam_data.parquet</code> (new city). Each row is <b>one 30 m pixel in one year</b>, identified by <code>px_key, py_key</code> (its position) and <code>year</code>.</p>
+      <p>Each row holds up to 3 summer observations of the 6 colour bands (<code>Blue … SWIR2</code>, suffixes <code>_1 _2 _3</code>), each with a <code>qa_valid</code> yes/no flag. The building's age comes from <code>weighted_mean_year</code>, cut into the 4 classes (first cut-off 1960 in Madrid, 1945 in Amsterdam; then 1984 and 2004).</p></div>
+    <div class="card pink"><h3>2 · Clouds: what we do and don't do</h3>
+      <p><b>Honest answer: our code does no cloud detection of its own.</b> The organisers already did the cloud work:</p>
+      <ul><li>for each year they picked up to 3 <b>summer</b> scenes (June–August), ranked by cloud cover and missing pixels;</li>
+      <li>each observation carries a <code>qa_valid</code> flag marking a clean, cloud-free pixel;</li>
+      <li>the files were pre-cleaned: corrupt or saturated values removed, and only pixels with at least 15% building cover kept.</li></ul>
+      <p>Our part: for each band we take the <b>first observation flagged clean</b> (earliest in the summer). Then we drop the year if any band is missing, any value is 0 or below, or Blue is above 15,000 (haze or bright cloud that slipped through), and we keep only 1984–2025.</p></div>
+    <div class="card mint"><h3>3 · Missing years and the two kinds of input</h3>
+      <p>Each pixel becomes a <b>42-year series</b> (1984–2025) of 6 bands. Years with no clean observation stay empty at first, and we remember which ones they were.</p>
+      <ul><li><b>Gap filling:</b> missing years are filled by drawing a straight line between the nearest observed years; years before the first or after the last observation copy the nearest value.</li>
+      <li><b>60 organiser features</b> for the simple model: average and spread of each band (all years, before 2004, from 2004), average and spread of 5 indices such as NDVI (greenery) and NDBI (built-up), year-to-year change, and 2 flags for whether clean early or late years exist.</li>
+      <li><b>For the 6 neural networks:</b> each year becomes 12 numbers (6 bands converted to surface reflectance on a log scale, the 5 indices, overall brightness). Each set of 12 is also averaged with neighbours within 90 m, giving 24 numbers × 42 years.</li></ul></div>
+  </div>
+</section>
+
+<section id="training">
+  <div class="sec-h"><span class="tag">~</span><h2>How training settled</h2></div>
+  <p class="sub">The six neural networks were trained once, in Madrid, for 40 rounds (epochs). After every round we checked two scores. These are the real logs of the six networks inside the frozen model; nothing was retrained for this page.</p>
+  <p class="howread"><b>How to read it:</b> left, the score on 7,600 Madrid patches held back from training; each network keeps the round where this score was best (the ring). Right, the same networks used in Amsterdam with no Amsterdam answers. This was only watched, never used to choose anything. Blue lines are plain networks; green lines are the "city-blind" networks trained so they can't tell Madrid from Amsterdam. The plain ones learn Madrid better but slowly lose Amsterdam; the city-blind ones keep Amsterdam steadier. That is why h4d2 uses both.</p>
+  <div class="tr2">
+    <div class="card white"><h3 style="margin-top:0">Madrid held-out score per round</h3><svg id="trMad" viewBox="0 0 560 330"></svg></div>
+    <div class="card white"><h3 style="margin-top:0">Amsterdam score per round (watched only)</h3><svg id="trAms" viewBox="0 0 560 330"></svg></div>
+  </div>
+  <p class="note" style="margin-top:10px">Logged per round: macro F1 only. The training loss was not recorded. Files: <code>h4d2/research/nn42.txt, plain1.txt, plain2.txt</code> (plain) and <code>dann1.txt, dann2.txt, dann3.txt</code> (city-blind). Each saved network (<code>h4d2/research/cnn_*.pt</code>) is byte-identical to the one inside <code>stage1_madrid.pt</code>.</p>
 </section>
 
 <section id="sim">
@@ -484,7 +561,7 @@ function curve(seed){
   let g='';
   for(let v=0.5;v<=0.781;v+=0.05){g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#E7EAF6"/><text x="${L-10}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#5D6685">${v.toFixed(2)}</text>`;}
   SH.forEach((n,i)=>{g+=`<text x="${x(i)}" y="${H-B+20}" text-anchor="middle" font-size="12" fill="#5D6685">${n}</text><text x="${x(i)}" y="${H-B+34}" text-anchor="middle" font-size="10.5" fill="#9AA1BC">log2 ${Math.log2(n).toFixed(1)}</text>`;});
-  g+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Labelled Amsterdam pixels per class (log2 scale)</text>`;
+  g+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Labelled pixels per class, log2 scale</text>`;
   g+=`<text transform="translate(16,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Macro F1</text>`;
   // shaded gain band
   const top=SH.map((n,i)=>`${x(i)},${y(O[series[0].k][String(n)][0])}`), bot=SH.map((n,i)=>`${x(i)},${y(O[series[2].k][String(n)][0])}`).reverse();
@@ -577,6 +654,39 @@ function nbWire(seg,box,byN,labels,start){const ns=Object.keys(byN).map(Number).
   seg.innerHTML=ns.map(n=>`<button data-n="${n}" class="${n===cur?'on':''}">n = ${n}</button>`).join('');
   const draw=()=>{box.innerHTML=nbHTML(byN[String(cur)],labels);box.querySelectorAll('rect[data-t]').forEach(c=>{c.addEventListener('mousemove',e=>showTip(e,c.dataset.t));c.addEventListener('mouseleave',hideTip);});};
   seg.onclick=e=>{const b=e.target.closest('button');if(!b)return;cur=+b.dataset.n;[...seg.children].forEach(x=>x.classList.toggle('on',x===b));draw();};draw();}
+
+// ---- data pipeline diagram (display only)
+(function(){const svg=$('pipeSvg');if(!svg)return;
+  const st=[['Organiser files','Madrid + Amsterdam','.parquet files','1 row = pixel × year'],
+            ['Clean look','first qa_valid look','drop haze (Blue>15k)','and broken values'],
+            ['42-year series','1984–2025 per pixel','× 6 colour bands','gaps remembered'],
+            ['Fill the gaps','straight line between','observed years;','ends copy nearest'],
+            ['Features','60 summary numbers','+ 24 numbers a year','incl. 90 m neighbours'],
+            ['h4d2 → age','Madrid model nudged','by a few labels →','one class per pixel']];
+  const W=1180,bw=168,gap=(W-6*bw)/5,y0=60,bh=170;let g='';
+  st.forEach((s,i)=>{const x=i*(bw+gap),fill=i===5?'#2340F5':i===0?'#E6EBFF':'#F4F6FC',ink=i===5?'#fff':'#0E1A4F',sub=i===5?'#DCE3FF':'#4A5070';
+    g+=`<rect x="${x}" y="${y0}" width="${bw}" height="${bh}" rx="14" fill="${fill}" stroke="${i===5?'none':'#D9DFF2'}"/>`;
+    g+=`<circle cx="${x+24}" cy="${y0+28}" r="13" fill="${i===5?'#fff':'#2340F5'}"/><text x="${x+24}" y="${y0+33}" text-anchor="middle" font-size="13" font-weight="800" fill="${i===5?'#2340F5':'#fff'}">${i+1}</text>`;
+    g+=`<text x="${x+44}" y="${y0+33}" font-size="15" font-weight="800" fill="${ink}">${s[0]}</text>`;
+    s.slice(1).forEach((t,j)=>{g+=`<text x="${x+14}" y="${y0+76+j*24}" font-size="12.5" fill="${sub}">${t}</text>`;});
+    if(i<5)g+=`<path d="M${x+bw+6} ${y0+bh/2} l${gap-14} 0 m-8 -7 l8 7 l-8 7" fill="none" stroke="#8C95B5" stroke-width="2.4"/>`;});
+  g+=`<text x="0" y="28" font-size="13" fill="#4A5070">Clouds were handled by the organisers before step 1 (summer scenes picked by low cloud cover, qa_valid flags). Our code starts from their files.</text>`;
+  g+=`<text x="${W}" y="${y0+bh+40}" text-anchor="end" font-size="12.5" fill="#4A5070">Output: a CSV with px_key, py_key, pred_class (1–4) for every pixel</text>`;
+  svg.innerHTML=g;})();
+// ---- training logs (copied from h4d2/research/*.txt; display only)
+const TRAIN_LOGS=[{"file":"h4d2/research/nn42.txt","label":"Plain, seed 42","dann":false,"mad":[0.5937,0.63,0.6456,0.6552,0.6568,0.6552,0.6587,0.6434,0.6653,0.6907,0.6679,0.6908,0.7065,0.7222,0.7052,0.7267,0.7242,0.7191,0.7328,0.7338,0.7421,0.7485,0.7488,0.7476,0.7519,0.7579,0.7614,0.7642,0.7686,0.7657,0.7671,0.7663,0.7706,0.7691,0.7697,0.7717,0.7716,0.7711,0.7707,0.769],"ams":[0.5014,0.5883,0.5613,0.5618,0.5453,0.5394,0.5456,0.4661,0.4102,0.4541,0.5609,0.4421,0.4267,0.467,0.4207,0.5094,0.4008,0.439,0.506,0.4772,0.4902,0.5132,0.5248,0.4685,0.4133,0.4549,0.4878,0.479,0.4873,0.4736,0.4934,0.4648,0.4828,0.4745,0.47,0.4693,0.4659,0.4685,0.466,0.4628],"best":35},{"file":"h4d2/research/plain1.txt","label":"Plain, seed 1","dann":false,"mad":[0.6003,0.6278,0.6561,0.6622,0.6759,0.6684,0.6547,0.6546,0.6753,0.6962,0.6576,0.6984,0.6908,0.7128,0.7227,0.7264,0.7382,0.7389,0.7382,0.7314,0.733,0.7469,0.7509,0.7512,0.7545,0.7449,0.763,0.7592,0.7665,0.7676,0.7656,0.7706,0.7682,0.7661,0.7713,0.7682,0.7692,0.7703,0.7686,0.7685],"ams":[0.5076,0.5563,0.5269,0.5866,0.5543,0.5679,0.5473,0.5723,0.3928,0.3756,0.4977,0.542,0.5185,0.4528,0.4762,0.4722,0.4928,0.4805,0.3937,0.4957,0.412,0.4306,0.478,0.4566,0.4387,0.4468,0.4527,0.4536,0.4528,0.4382,0.4148,0.4543,0.4293,0.4364,0.4296,0.4355,0.4361,0.4323,0.438,0.4396],"best":34},{"file":"h4d2/research/plain2.txt","label":"Plain, seed 2","dann":false,"mad":[0.5821,0.6285,0.6414,0.6358,0.6526,0.6728,0.6728,0.6842,0.6774,0.6702,0.6767,0.7077,0.6823,0.7008,0.7182,0.6999,0.7291,0.7173,0.7358,0.7414,0.7246,0.7393,0.751,0.7329,0.746,0.7573,0.7531,0.7595,0.7603,0.7634,0.7602,0.7616,0.7711,0.7651,0.7679,0.7711,0.772,0.7712,0.7726,0.7727],"ams":[0.4844,0.4094,0.46,0.4237,0.4824,0.4611,0.4474,0.4661,0.4843,0.4462,0.4021,0.4363,0.4315,0.4829,0.4317,0.3248,0.4028,0.3745,0.3948,0.4489,0.336,0.34,0.371,0.379,0.3491,0.3779,0.3919,0.4017,0.3751,0.3668,0.3447,0.3799,0.369,0.3695,0.3599,0.3495,0.3565,0.357,0.359,0.3583],"best":39},{"file":"h4d2/research/dann1.txt","label":"City-blind, seed 1","dann":true,"mad":[0.3887,0.446,0.5517,0.575,0.5939,0.5878,0.565,0.4906,0.6106,0.5977,0.5877,0.6106,0.647,0.6603,0.6602,0.6433,0.6383,0.6332,0.6589,0.6246,0.6662,0.6455,0.6527,0.6561,0.653,0.658,0.6531,0.6748,0.6565,0.6529,0.6544,0.6675,0.6607,0.6617,0.6598,0.655,0.6622,0.6552,0.6615,0.6618],"ams":[0.5448,0.5462,0.5119,0.6276,0.6123,0.6183,0.6462,0.6332,0.5357,0.5297,0.6385,0.6367,0.6349,0.563,0.6007,0.6262,0.6257,0.5465,0.6069,0.5956,0.6194,0.6168,0.6117,0.6173,0.6235,0.6044,0.6169,0.6191,0.6103,0.6422,0.599,0.6392,0.6156,0.619,0.6081,0.6065,0.6032,0.5993,0.5994,0.5995],"best":27},{"file":"h4d2/research/dann2.txt","label":"City-blind, seed 2","dann":true,"mad":[0.3872,0.4278,0.4716,0.4993,0.548,0.5325,0.555,0.5468,0.5777,0.5342,0.5562,0.6169,0.5744,0.5931,0.608,0.5792,0.6464,0.6397,0.5934,0.6201,0.6466,0.6129,0.6657,0.6149,0.6026,0.6279,0.6393,0.6163,0.6207,0.6356,0.6245,0.6137,0.6086,0.6346,0.6233,0.6255,0.6113,0.625,0.6177,0.6166],"ams":[0.5647,0.5208,0.5684,0.562,0.5187,0.5753,0.6106,0.5265,0.638,0.5976,0.5005,0.5048,0.4973,0.4988,0.5429,0.5836,0.5646,0.5278,0.614,0.6355,0.5397,0.552,0.6113,0.6001,0.5856,0.5662,0.585,0.5885,0.5832,0.6054,0.566,0.5877,0.5807,0.5969,0.5959,0.5903,0.5878,0.5837,0.5876,0.5854],"best":22},{"file":"h4d2/research/dann3.txt","label":"City-blind, seed 3","dann":true,"mad":[0.4179,0.4886,0.508,0.5104,0.4578,0.5352,0.5483,0.5558,0.584,0.6041,0.5814,0.5774,0.5835,0.6164,0.5424,0.6244,0.6384,0.641,0.6117,0.6244,0.6479,0.6391,0.6164,0.6242,0.6077,0.6592,0.6005,0.6601,0.6349,0.6523,0.6475,0.6647,0.6337,0.6485,0.6362,0.6403,0.6424,0.6452,0.6424,0.6407],"ams":[0.5866,0.5895,0.5582,0.5623,0.5681,0.6348,0.5869,0.4168,0.5239,0.5691,0.5206,0.5944,0.6049,0.4654,0.609,0.6076,0.5335,0.4994,0.6205,0.5153,0.5706,0.5675,0.5974,0.5678,0.611,0.6224,0.5619,0.6115,0.5929,0.5888,0.598,0.5977,0.6176,0.6087,0.6017,0.6073,0.6109,0.6069,0.6079,0.6083],"best":31}];
+(function(){if(!$('trMad'))return;
+  function draw(svg,key,lo,hi){const W=560,H=330,L=48,R=14,T=40,B=46;const x=e=>L+e/39*(W-L-R),y=v=>T+(1-(v-lo)/(hi-lo))*(H-T-B);let g='';
+    for(let v=lo;v<=hi+1e-9;v+=0.05){g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#E7EAF6"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11.5" fill="#5D6685">${v.toFixed(2)}</text>`;}
+    [0,10,20,30,39].forEach(e=>{g+=`<text x="${x(e)}" y="${H-B+18}" text-anchor="middle" font-size="11.5" fill="#5D6685">${e+1}</text>`;});
+    g+=`<text x="${(L+W-R)/2}" y="${H-8}" text-anchor="middle" font-size="12" fill="#18213F" font-weight="600">Training round (epoch)</text>`;
+    TRAIN_LOGS.forEach(r=>{const c=r.dann?'#1FA971':'#2340F5',v=r[key];const d=v.map((q,e)=>(e?'L':'M')+x(e).toFixed(1)+' '+y(q).toFixed(1)).join(' ');
+      g+=`<path d="${d}" fill="none" stroke="${c}" stroke-width="2" opacity="0.85"><title>${r.label}</title></path>`;
+      g+=`<circle cx="${x(r.best)}" cy="${y(v[r.best])}" r="5" fill="#fff" stroke="${c}" stroke-width="2.5"><title>${r.label}: kept round ${r.best+1}, ${key==='mad'?'Madrid':'Amsterdam'} ${v[r.best].toFixed(3)}</title></circle>`;});
+    g+=`<g font-size="12" font-weight="700"><rect x="${L}" y="10" width="14" height="4" fill="#2340F5"/><text x="${L+20}" y="16" fill="#2340F5">Plain (3)</text><rect x="${L+92}" y="10" width="14" height="4" fill="#1FA971"/><text x="${L+112}" y="16" fill="#1FA971">City-blind (3)</text><circle cx="${L+226}" cy="12" r="5" fill="#fff" stroke="#18213F" stroke-width="2"/><text x="${L+236}" y="16" fill="#18213F">round kept</text></g>`;
+    svg.innerHTML=g;}
+  draw($('trMad'),'mad',0.35,0.80); draw($('trAms'),'ams',0.30,0.70);})();
+
 if(P.explain){$('nbrs').classList.remove('hidden');$('nbNav').classList.remove('hidden');
   nbWire($('nbSeg'),$('nbBox'),P.explain.per_n,CLS,25);
   const T=P.explain.table;$('nbTable').innerHTML='<tr><th>Labels per class</th><th>Own guess only</th><th>After blending (official)</th><th>Change</th><th>Draws where blending helped</th></tr>'+
@@ -721,7 +831,7 @@ if(window.H4D2_APP){
     const y=v=>T+(1-(v-lo)/(hi-lo))*(H-T-B);let g='';
     for(let v=lo;v<=hi+1e-9;v+=0.05){g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#E7EAF6"/><text x="${L-10}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#5D6685">${v.toFixed(2)}</text>`;}
     SHN.forEach(n=>{g+=`<text x="${x(n)}" y="${H-B+20}" text-anchor="middle" font-size="12" fill="#5D6685">${n}</text><text x="${x(n)}" y="${H-B+34}" text-anchor="middle" font-size="10.5" fill="#9AA1BC">log2 ${Math.log2(n).toFixed(1)}</text>`;});
-    g+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Labelled pixels per class (log2 scale)</text><text transform="translate(16,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Macro F1</text>`;
+    g+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Labelled pixels per class, log2 scale</text><text transform="translate(16,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="12.5" fill="#18213F" font-weight="600">Macro F1</text>`;
     names.forEach((nm,i)=>{const m=r.models[nm],c=colOf(nm,i),pts=SHN.filter(n=>m.per_n[n]).map(n=>[x(n),m.per_n[n][0],m.per_n[n][1],n]);
       if(pts.length>1)g+=`<polyline points="${pts.map(p=>p[0]+','+y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${nm==='h4d2'?3.5:2.4}"/>`;
       pts.forEach(p=>{if(p[2]>0)g+=`<line x1="${p[0]}" x2="${p[0]}" y1="${y(p[1]+p[2])}" y2="${y(p[1]-p[2])}" stroke="${c}" stroke-width="1.8"/><line x1="${p[0]-5}" x2="${p[0]+5}" y1="${y(p[1]+p[2])}" y2="${y(p[1]+p[2])}" stroke="${c}" stroke-width="1.8"/><line x1="${p[0]-5}" x2="${p[0]+5}" y1="${y(p[1]-p[2])}" y2="${y(p[1]-p[2])}" stroke="${c}" stroke-width="1.8"/>`;
