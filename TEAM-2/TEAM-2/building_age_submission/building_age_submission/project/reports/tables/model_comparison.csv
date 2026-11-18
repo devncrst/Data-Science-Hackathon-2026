@@ -1,6 +1,0 @@
-model,madrid_cv_macro_F1,std,amsterdam_zero_shot_macro_F1
-Logistic regression,0.5976,0.0055,0.5275
-Decision tree,0.56,0.0043,0.4623
-Random forest,0.6606,0.0061,0.5338
-Neural network (MLP),0.6736,0.0053,0.4581
-LightGBM (ours),0.6797,0.0065,0.5263
