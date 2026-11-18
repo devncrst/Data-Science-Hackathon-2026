@@ -1,8 +1,0 @@
-dataset,n_per_class,f1_mean,f1_std
-Madrid (CV),all,0.6797,0.0065
-Amsterdam zero-shot,0,0.5263,0.0
-Amsterdam,5,0.5887,0.0298
-Amsterdam,25,0.66,0.0184
-Amsterdam,50,0.6784,0.0085
-Amsterdam,100,0.7005,0.0065
-Amsterdam,200,0.716,0.0034
