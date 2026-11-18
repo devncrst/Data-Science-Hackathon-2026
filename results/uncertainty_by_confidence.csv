@@ -1,0 +1,11 @@
+city,group,pixels,min_confidence,max_confidence,accuracy,macro_f1
+Amsterdam n=25,1,5179,0.634,0.919,0.8592,0.8326
+Amsterdam n=25,2,5179,0.555,0.634,0.8021,0.7608
+Amsterdam n=25,3,5178,0.489,0.555,0.6958,0.6452
+Amsterdam n=25,4,5178,0.425,0.489,0.5776,0.5393
+Amsterdam n=25,5,5178,0.256,0.425,0.4282,0.3872
+Madrid out-of-fold,1,15253,0.753,1.0,0.9633,0.9456
+Madrid out-of-fold,2,15253,0.609,0.753,0.8594,0.8546
+Madrid out-of-fold,3,15253,0.509,0.609,0.7465,0.7194
+Madrid out-of-fold,4,15252,0.425,0.509,0.6145,0.5862
+Madrid out-of-fold,5,15252,0.255,0.425,0.4729,0.4475

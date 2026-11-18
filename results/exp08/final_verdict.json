@@ -1,0 +1,14 @@
+{
+  "final": {
+    "stage": "{}",
+    "name": "baseline",
+    "prior": false,
+    "smooth": [
+      0.5,
+      2
+    ]
+  },
+  "confirmed": true,
+  "madrid_hidden_baseline": 0.608771108744574,
+  "madrid_hidden_new": 0.6172893417552378
+}

@@ -1,0 +1,31 @@
+VALIDATION RUN 11:09
+Madrid blocks: 215
+   fold done 0.6484 29s
+   fold done 0.6611 59s
+   fold done 0.6598 89s
+   fold done 0.6534 119s
+   fold done 0.6603 148s
+random 5-fold                    macro F1 0.6566 +/- 0.0050 | recall per class [0.549, 0.712, 0.637, 0.702]
+   fold done 0.6418 179s
+   fold done 0.5902 209s
+   fold done 0.6453 238s
+   fold done 0.5839 269s
+   fold done 0.6166 284s
+spatial 5-fold (1.5 km blocks)   macro F1 0.6156 +/- 0.0254 | recall per class [0.504, 0.687, 0.592, 0.661]
+  spatial CV + smoothing alpha 0.3: macro F1 0.6283 (pixels with a neighbour: 97.4%)
+  spatial CV + smoothing alpha 0.5: macro F1 0.6319 (pixels with a neighbour: 97.4%)
+  spatial CV + smoothing alpha 0.7: macro F1 0.6304 (pixels with a neighbour: 97.4%)
+  spatial CV no smoothing (pooled): 0.6169
+[own scaling] n=  5 blend3 0.5801+/-0.0376 | +smoothing 0.5 0.5934+/-0.0405 | paired gain +0.0133 (wins 10/10) | nbr coverage 93.2%  (106s)
+[own scaling] n= 25 blend3 0.6410+/-0.0125 | +smoothing 0.5 0.6584+/-0.0118 | paired gain +0.0174 (wins 10/10) | nbr coverage 93.2%  (213s)
+[own scaling] n= 50 blend3 0.6656+/-0.0117 | +smoothing 0.5 0.6835+/-0.0118 | paired gain +0.0180 (wins 10/10) | nbr coverage 93.1%  (321s)
+[own scaling] n=100 blend3 0.6831+/-0.0051 | +smoothing 0.5 0.7022+/-0.0060 | paired gain +0.0192 (wins 10/10) | nbr coverage 93.0%  (440s)
+[own scaling] n=200 blend3 0.7032+/-0.0036 | +smoothing 0.5 0.7194+/-0.0047 | paired gain +0.0162 (wins 10/10) | nbr coverage 92.7%  (644s)
+[own scaling] AVERAGE blend3 0.6546 | +smoothing 0.6714
+[madrid scaling] n=  5 blend3 0.5626+/-0.0373 | +smoothing 0.5 0.5768+/-0.0407 | paired gain +0.0142 (wins 10/10) | nbr coverage 93.2%  (179s)
+[madrid scaling] n= 25 blend3 0.6315+/-0.0120 | +smoothing 0.5 0.6499+/-0.0117 | paired gain +0.0184 (wins 10/10) | nbr coverage 93.2%  (285s)
+[madrid scaling] n= 50 blend3 0.6607+/-0.0127 | +smoothing 0.5 0.6789+/-0.0129 | paired gain +0.0182 (wins 10/10) | nbr coverage 93.1%  (477s)
+[madrid scaling] n=100 blend3 0.6803+/-0.0055 | +smoothing 0.5 0.6985+/-0.0062 | paired gain +0.0182 (wins 10/10) | nbr coverage 93.0%  (694s)
+[madrid scaling] n=200 blend3 0.7017+/-0.0036 | +smoothing 0.5 0.7187+/-0.0048 | paired gain +0.0170 (wins 10/10) | nbr coverage 92.7%  (911s)
+[madrid scaling] AVERAGE blend3 0.6473 | +smoothing 0.6646
+DONE 11:41

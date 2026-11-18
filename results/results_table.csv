@@ -1,0 +1,8 @@
+setting,macro_F1_mean,macro_F1_std,official_reference
+Madrid (5x5 CV),0.6562,0.0033,0.6179
+Amsterdam n=5/class,0.5801,0.0376,0.5437
+Amsterdam n=25/class,0.641,0.0125,0.5986
+Amsterdam n=50/class,0.6656,0.0117,0.6079
+Amsterdam n=100/class,0.6831,0.0051,0.6129
+Amsterdam n=200/class,0.7031,0.0036,0.615
+Amsterdam average of 5,0.6546,,0.5956

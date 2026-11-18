@@ -1,0 +1,4 @@
+config,random_cv,spatial_cv,spatial_smoothed
+baseline,0.6623,0.6165,0.6323
+G1_3x3,0.6951,0.6243,0.6275
+G2_3x3_7x7,0.7384,0.6337,0.6354

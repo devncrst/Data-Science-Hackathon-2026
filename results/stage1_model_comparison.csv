@@ -1,0 +1,7 @@
+model,macro_F1,std,seconds
+HistGradientBoosting,0.6611,0.0044,2280
+RandomForest (current),0.6566,0.005,226
+NeuralNet (MLP),0.6536,0.0051,139
+ExtraTrees,0.6482,0.0054,70
+kNN (k=15),0.6276,0.0039,8
+LogisticRegression,0.604,0.0047,397
